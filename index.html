@@ -589,5 +589,120 @@
         </div>
     </footer>
 
+
+    <!-- Audio Player -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_2c4d749fac.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- Bouton Audio -->
+    <button id="audioToggle" class="audio-toggle">
+        <span class="audio-icon">🔊</span>
+    </button>
+    
+    <style>
+        .audio-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 10000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(212,175,55,.2), rgba(0,255,178,.15));
+            border: 2px solid rgba(212,175,55,.4);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(212,175,55,.3);
+        }
+        
+        .audio-toggle:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(212,175,55,.5);
+            background: linear-gradient(135deg, rgba(212,175,55,.3), rgba(0,255,178,.25));
+        }
+        
+        .audio-toggle.muted {
+            background: linear-gradient(135deg, rgba(255,0,0,.2), rgba(100,100,100,.15));
+            border-color: rgba(255,0,0,.4);
+        }
+        
+        .audio-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .audio-toggle:hover .audio-icon {
+            transform: scale(1.1);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 10px 30px rgba(212,175,55,.3); }
+            50% { box-shadow: 0 10px 40px rgba(212,175,55,.6); }
+        }
+        
+        .audio-toggle.playing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+    
+    <script>
+        // Audio player logic
+        const audio = document.getElementById('bgMusic');
+        const toggle = document.getElementById('audioToggle');
+        const icon = toggle.querySelector('.audio-icon');
+        
+        let isPlaying = false;
+        
+        // Tenter de lancer automatiquement au chargement
+        window.addEventListener('load', () => {
+            audio.volume = 0.25; // 25% volume
+            audio.play().then(() => {
+                isPlaying = true;
+                toggle.classList.add('playing');
+            }).catch(() => {
+                // Si autoplay bloqué par le navigateur
+                console.log('Autoplay blocked - user must interact');
+            });
+        });
+        
+        // Toggle play/pause
+        toggle.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                icon.textContent = '🔇';
+                toggle.classList.remove('playing');
+                toggle.classList.add('muted');
+                isPlaying = false;
+            } else {
+                audio.play();
+                audio.volume = 0.25;
+                icon.textContent = '🔊';
+                toggle.classList.add('playing');
+                toggle.classList.remove('muted');
+                isPlaying = true;
+            }
+        });
+        
+        // Détecter si la musique joue
+        audio.addEventListener('play', () => {
+            isPlaying = true;
+            icon.textContent = '🔊';
+            toggle.classList.add('playing');
+            toggle.classList.remove('muted');
+        });
+        
+        audio.addEventListener('pause', () => {
+            isPlaying = false;
+            icon.textContent = '🔇';
+            toggle.classList.remove('playing');
+            toggle.classList.add('muted');
+        });
+    </script>
+
 </body>
 </html>
