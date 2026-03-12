@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Template | HarK Trading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 157, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff9d, #8a2be2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #00ff9d;
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #000 0%, #0a0a0a 100%);
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(0, 255, 157, 0.1) 0%, transparent 50%);
+            animation: bgRotate 30s linear infinite;
+        }
+
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-date {
+            font-size: 0.85rem;
+            color: #00ff9d;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Article */
+        .article {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .article p {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+        }
+
+        .article h2 {
+            font-size: 2rem;
+            margin: 3rem 0 1.5rem;
+            font-weight: 800;
+        }
+
+        .article img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            background: #0a0a0a;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: #666;
+        }
+
+        .cta-back {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #00ff9d, #8a2be2);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .cta-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">HarK Trading</a>
+            <a href="index.html" class="back-link">← Retour aux articles</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-date">Mois 2026</div>
+            <h1>Titre de l'article</h1>
+            <div class="hero-meta">
+                <span>Par HarK</span>
+                <span>Lecture 5 min</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Content -->
+    <article class="article">
+        <p>
+            Ceci est un template pour tes futurs articles. Remplace ce texte par ton contenu.
+        </p>
+        
+        <h2>Section 1</h2>
+        <p>
+            Ton contenu ici...
+        </p>
+
+        <h2>Section 2</h2>
+        <p>
+            Ton contenu ici...
+        </p>
+
+        <!-- Tu peux ajouter des images comme ça : -->
+        <!-- <img src="chemin-vers-image.png" alt="Description"> -->
+
+    </article>
+
+    <!-- Footer -->
+    <footer>
+        <p>Merci de votre lecture</p>
+        <p style="font-size: 1.2rem; font-weight: 700; margin: 1rem 0;">HarK</p>
+        <a href="index.html" class="cta-back">← Retour aux articles</a>
+        <p style="margin-top: 2rem;">&copy; 2026 HarK Trading</p>
+    </footer>
+
+</body>
+</html>
