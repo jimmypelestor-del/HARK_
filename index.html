@@ -586,8 +586,97 @@
             <p style="margin-top: 1rem; font-size: 0.9rem;">
                 Les analyses présentées ne constituent pas des conseils financiers.
             </p>
+            <div style="margin-top:2.5rem;">
+                <span id="admin-dot" onclick="adminLogin()" style="
+                    display:inline-block; width:8px; height:8px; border-radius:50%;
+                    background:rgba(255,255,255,.10); cursor:pointer; transition:all .3s;
+                " title=""></span>
+            </div>
         </div>
     </footer>
+
+    <!-- Overlay mot de passe -->
+    <div id="admin-overlay" style="
+        display:none; position:fixed; inset:0; z-index:9999;
+        background:rgba(0,0,0,.88); backdrop-filter:blur(14px);
+        align-items:center; justify-content:center;
+    ">
+        <div style="
+            background:linear-gradient(135deg,#07111f,#03050b);
+            border:1px solid rgba(94,231,255,.22);
+            border-radius:22px; padding:2.5rem 2rem; width:100%; max-width:380px;
+            box-shadow:0 0 80px rgba(94,231,255,.12), 0 0 200px rgba(138,99,255,.06);
+            text-align:center;
+        ">
+            <div style="font-size:2.2rem; margin-bottom:.6rem;">🔐</div>
+            <h3 style="color:#fff; font-size:1.15rem; font-weight:900; margin-bottom:.3rem; letter-spacing:.05em;">ACCÈS RESTREINT</h3>
+            <p style="color:#5d6b7a; font-size:.82rem; margin-bottom:1.8rem; letter-spacing:.08em; text-transform:uppercase;">HarK Trading — Zone privée</p>
+            <input id="admin-pwd" type="password" placeholder="Mot de passe secret" 
+                onkeydown="if(event.key==='Enter')checkAdmin()"
+                style="
+                    width:100%; padding:.9rem 1rem; border-radius:12px;
+                    border:1px solid rgba(255,255,255,.1);
+                    background:rgba(255,255,255,.05); color:#fff;
+                    font-size:1rem; outline:none; margin-bottom:.7rem;
+                    box-sizing:border-box; letter-spacing:.05em;
+                    transition:border .3s;
+                "
+                onfocus="this.style.borderColor='rgba(94,231,255,.4)'"
+                onblur="this.style.borderColor='rgba(255,255,255,.1)'"
+            >
+            <div id="admin-error" style="color:#ff5555; font-size:.82rem; margin-bottom:.7rem; display:none;">
+                ❌ Mot de passe incorrect
+            </div>
+            <button onclick="checkAdmin()" style="
+                width:100%; padding:.9rem; border-radius:12px; border:none;
+                background:linear-gradient(135deg,#5ee7ff,#8a63ff);
+                color:#03050b; font-weight:900; font-size:.95rem; cursor:pointer;
+                margin-bottom:.7rem; letter-spacing:.06em;
+                box-shadow:0 6px 24px rgba(94,231,255,.25);
+                transition:transform .15s, box-shadow .15s;
+            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                ENTRER
+            </button>
+            <button onclick="document.getElementById('admin-overlay').style.display='none'" style="
+                width:100%; padding:.7rem; border-radius:12px;
+                border:1px solid rgba(255,255,255,.08);
+                background:transparent; color:#5d6b7a; font-size:.85rem; cursor:pointer;
+            ">Annuler</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('admin-dot').addEventListener('mouseenter', function(){
+            this.style.background = 'rgba(94,231,255,.3)';
+            this.style.boxShadow = '0 0 8px rgba(94,231,255,.4)';
+        });
+        document.getElementById('admin-dot').addEventListener('mouseleave', function(){
+            this.style.background = 'rgba(255,255,255,.10)';
+            this.style.boxShadow = 'none';
+        });
+
+        function adminLogin() {
+            document.getElementById('admin-overlay').style.display = 'flex';
+            document.getElementById('admin-error').style.display = 'none';
+            document.getElementById('admin-pwd').value = '';
+            setTimeout(() => document.getElementById('admin-pwd').focus(), 100);
+        }
+
+        function checkAdmin() {
+            const pwd = document.getElementById('admin-pwd').value;
+            if (pwd === 'Jimpysarah121623.') {
+                window.location.href = 'dashboard-secret.html';
+            } else {
+                document.getElementById('admin-error').style.display = 'block';
+                document.getElementById('admin-pwd').value = '';
+                document.getElementById('admin-pwd').focus();
+            }
+        }
+
+        document.getElementById('admin-overlay').addEventListener('click', function(e){
+            if(e.target === this) this.style.display = 'none';
+        });
+    </script>
 
 </body>
 </html>
