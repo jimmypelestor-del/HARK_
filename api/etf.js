@@ -65,7 +65,6 @@ export default async function handler(req, res) {
     }
 
     const getIdx = n => headers.findIndex(h => h.trim() === n || h.includes(n));
-    const ti = getIdx('Total');
     const ii = getIdx('IBIT');
     const fi = getIdx('FBTC');
     const gi = getIdx('GBTC');
@@ -73,39 +72,26 @@ export default async function handler(req, res) {
 
     const last = dataRows[dataRows.length - 1];
 
-    // Si Total non trouvé, calculer la somme de toutes les colonnes ETF
-    let totalVal;
-    if (ti >= 0 && last[ti] && last[ti] !== '') {
-      totalVal = last[ti];
-    } else {
-      // Sommer toutes les valeurs numériques de la ligne (sauf date)
-      let sum = 0;
-      last.slice(1).forEach(v => { const n = parseFloat(v); if(!isNaN(n)) sum += n; });
-      totalVal = sum !== 0 ? sum.toFixed(1) : '—';
-    }
+    // La dernière cellule = Total (colonne sans header sur Farside)
+    const totalVal = last[last.length - 1] || '—';
 
-    // Historique 10 jours — calculer total si colonne manquante
-    const history = dataRows.slice(-10).map(row => {
-      let t;
-      if (ti >= 0 && row[ti] && row[ti] !== '') {
-        t = parseFloat(row[ti]) || 0;
-      } else {
-        t = row.slice(1).reduce((s, v) => s + (parseFloat(v) || 0), 0);
-      }
-      return { date: row[0], total: parseFloat(t.toFixed ? t.toFixed(1) : t) || 0 };
-    });
+    // Historique 10 jours — dernière cellule = total
+    const history = dataRows.slice(-10).map(row => ({
+      date:  row[0],
+      total: parseFloat(row[row.length - 1]) || 0,
+    }));
 
-    // Top flux du jour
+    // Top flux du jour — toutes colonnes sauf date (idx 0) et total (dernière)
     const topFlows = [];
-    const endIdx = ti > 0 ? ti : headers.length;
-    headers.slice(1, endIdx).forEach((h, i) => {
+    headers.slice(1, headers.length - 1).forEach((h, i) => {
+      if (!h) return;
       const val = parseFloat(last[i + 1]) || 0;
-      if (val !== 0 && h) topFlows.push({ name: h, val });
+      if (val !== 0) topFlows.push({ name: h, val });
     });
     topFlows.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
 
     return res.status(200).json({
-      source: 'Farside via ScrapingBee',
+      source: 'Farside · ScrapingBee',
       date:   last[0] || '—',
       total:  totalVal,
       ibit:   ii >= 0 ? (last[ii] || '—') : '—',
@@ -114,7 +100,6 @@ export default async function handler(req, res) {
       arkb:   ai >= 0 ? (last[ai] || '—') : '—',
       topFlows: topFlows.slice(0, 5),
       history,
-      debug: { headers, totalIdx: ti, lastRow: last }
     });
 
   } catch (e) {
