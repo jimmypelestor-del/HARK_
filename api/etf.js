@@ -1,76 +1,107 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 's-maxage=1800');
+  res.setHeader('Cache-Control', 's-maxage=3600'); // cache 1h pour économiser les crédits
 
-  const CG_KEY = 'af63e657b0204335bf8cc2dc8ecc487e';
+  const SB_KEY = 'bb4bb63c8eb64f9f8e2eb40ed80aced17b5a5488157';
+  const TARGET = 'https://farside.co.uk/btc/';
 
-  const endpoints = [
-    'https://open-api.coinglass.com/api/etf/bitcoin/flow/history?limit=10',
-    'https://open-api.coinglass.com/api/etf/bitcoin/flows/history?limit=10',
-    'https://open-api.coinglass.com/api/etf/bitcoin/net-flow/history?limit=10',
-    'https://open-api.coinglass.com/api/etf/bitcoin/flow-history?limit=10',
-  ];
+  try {
+    // ScrapingBee — lance un vrai Chrome, contourne le 403
+    const sbUrl = `https://app.scrapingbee.com/api/v1/?api_key=${SB_KEY}&url=${encodeURIComponent(TARGET)}&render_js=false&premium_proxy=false`;
 
-  for (const url of endpoints) {
-    try {
-      const r = await fetch(url, {
-        headers: { 'CG-API-KEY': CG_KEY, 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(8000),
-      });
-      const d = await r.json();
+    const r = await fetch(sbUrl, { signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error('ScrapingBee HTTP ' + r.status);
+    const html = await r.text();
 
-      // Si pas d'erreur 404 et qu'on a des données
-      if (r.status === 404) continue;
-      if (d.code !== '0' && d.code !== 0) {
-        // Retourner quand même pour debug
-        return res.status(200).json({ debug: true, url, status: r.status, response: d });
+    if (!html || html.length < 500) throw new Error('HTML vide — ' + html.slice(0, 100));
+    if (!html.includes('<table') && !html.includes('<tr')) throw new Error('Pas de tableau dans le HTML');
+
+    // Parser le tableau
+    const trMatches = [...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+    let headers = [];
+    const dataRows = [];
+
+    for (const match of trMatches) {
+      const cells = [...match[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)]
+        .map(c => c[1]
+          .replace(/<[^>]+>/g, '')
+          .replace(/&nbsp;/g, '')
+          .replace(/&#[0-9]+;/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+        );
+
+      if (!cells.length) continue;
+
+      // En-tête — contient IBIT et Total
+      if (cells.some(c => c === 'IBIT') && cells.some(c => c === 'Total' || c === 'GBTC')) {
+        headers = cells;
+        continue;
       }
 
-      const raw = d.data || [];
-      if (!raw.length) continue;
+      // Ligne de données — première cellule = date
+      const first = cells[0];
+      const isData = first && first.length >= 3 && (
+        /\d{1,2}\s+\w{3}/.test(first) ||   // "13 Mar"
+        /\w{3}\s+\d{1,2}/.test(first) ||   // "Mar 13"
+        /\d{2}\/\d{2}/.test(first) ||       // "13/03"
+        /\d{4}-\d{2}/.test(first)           // "2026-03"
+      );
 
-      // Format attendu : { timestamp, flow_usd, price_usd, etf_flows: [{etf_ticker, flow_usd}] }
-      const sorted = [...raw].sort((a, b) => b.timestamp - a.timestamp);
-      const latest = sorted[0];
-      const totalUsd = latest.flow_usd || 0;
-      const date = new Date(latest.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-
-      // Extraire IBIT, FBTC, GBTC, ARKB depuis etf_flows[]
-      const getFlow = ticker => {
-        const f = (latest.etf_flows || []).find(e => e.etf_ticker === ticker);
-        return f ? (f.flow_usd / 1e6).toFixed(1) : '—';
-      };
-
-      // Top flux
-      const topFlows = (latest.etf_flows || [])
-        .filter(f => f.flow_usd)
-        .map(f => ({ name: f.etf_ticker, val: parseFloat((f.flow_usd / 1e6).toFixed(1)) }))
-        .sort((a, b) => Math.abs(b.val) - Math.abs(a.val))
-        .slice(0, 5);
-
-      // Historique 10 jours
-      const history = sorted.slice(0, 10).reverse().map(d => ({
-        date: new Date(d.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
-        total: parseFloat((d.flow_usd / 1e6).toFixed(1)),
-      }));
-
-      return res.status(200).json({
-        source: 'CoinGlass',
-        date,
-        total: (totalUsd / 1e6).toFixed(1),
-        ibit: getFlow('IBIT'),
-        fbtc: getFlow('FBTC'),
-        gbtc: getFlow('GBTC'),
-        arkb: getFlow('ARKB'),
-        topFlows,
-        history,
-      });
-
-    } catch (e) {
-      continue;
+      if (isData && cells.length > 3) {
+        dataRows.push(cells);
+      }
     }
-  }
 
-  return res.status(500).json({ error: 'Aucun endpoint ETF CoinGlass disponible avec ce plan' });
+    if (!dataRows.length) {
+      // Debug : retourner un extrait du HTML pour diagnostiquer
+      return res.status(500).json({
+        error: 'Aucune ligne de données trouvée',
+        headersFound: headers,
+        rowCount: trMatches.length,
+        htmlSample: html.slice(0, 800),
+      });
+    }
+
+    const getIdx = n => headers.findIndex(h => h === n);
+    const ti = getIdx('Total');
+    const ii = getIdx('IBIT');
+    const fi = getIdx('FBTC');
+    const gi = getIdx('GBTC');
+    const ai = getIdx('ARKB');
+
+    const last = dataRows[dataRows.length - 1];
+
+    // Top flux du jour
+    const topFlows = [];
+    if (headers.length > 0 && ti > 0) {
+      headers.slice(1, ti).forEach((h, i) => {
+        const val = parseFloat(last[i + 1]) || 0;
+        if (val !== 0 && h) topFlows.push({ name: h, val });
+      });
+      topFlows.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
+    }
+
+    // Historique 10 derniers jours
+    const history = dataRows.slice(-10).map(row => ({
+      date:  row[0],
+      total: ti >= 0 ? (parseFloat(row[ti]) || 0) : 0,
+    }));
+
+    return res.status(200).json({
+      source: 'Farside via ScrapingBee',
+      date:   last[0] || '—',
+      total:  ti >= 0 ? (last[ti] || '—') : '—',
+      ibit:   ii >= 0 ? (last[ii] || '—') : '—',
+      fbtc:   fi >= 0 ? (last[fi] || '—') : '—',
+      gbtc:   gi >= 0 ? (last[gi] || '—') : '—',
+      arkb:   ai >= 0 ? (last[ai] || '—') : '—',
+      topFlows: topFlows.slice(0, 5),
+      history,
+    });
+
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
 }
