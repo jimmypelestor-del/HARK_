@@ -2,53 +2,56 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Cache-Control', 's-maxage=1800');
 
-  // Forex Factory fournit un feed JSON/XML public hebdomadaire
-  const today = new Date().toISOString().slice(0, 10); // "2026-03-14"
+  try {
+    const r = await fetch('https://nfs.faireconomy.media/ff_calendar_thisweek.json', {
+      headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const raw = await r.json();
 
-  const sources = [
-    // Feed JSON officiel Forex Factory (semaine courante)
-    `https://nfs.faireconomy.media/ff_calendar_thisweek.json`,
-    `https://nfs.faireconomy.media/ff_calendar_nextweek.json`,
-  ];
+    if (!Array.isArray(raw) || !raw.length) throw new Error('empty feed');
 
-  for (const url of sources) {
-    try {
-      const r = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(6000),
-      });
-      if (!r.ok) continue;
-      const raw = await r.json();
-      if (!Array.isArray(raw) || !raw.length) continue;
+    // Debug : voir le format de date du premier événement
+    const sample = raw.slice(0, 3);
+    const today = new Date().toISOString().slice(0, 10);
+    const allDates = [...new Set(raw.map(e => (e.date||'').slice(0,10)))];
 
-      // Filtrer : aujourd'hui + impact medium/high
-      const events = raw
-        .filter(e => {
-          const d = (e.date || '').slice(0, 10);
-          const imp = (e.impact || '').toLowerCase();
-          return d === today && (imp === 'high' || imp === 'medium');
-        })
-        .map(e => ({
-          time:     e.date ? new Date(e.date).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Paris' }) : '—',
-          currency: e.currency || '',
-          title:    e.title || '',
-          impact:   (e.impact || '').toLowerCase(),
-          forecast: e.forecast || '',
-          previous: e.previous || '',
-          actual:   e.actual   || '',
-        }))
-        .sort((a, b) => a.time.localeCompare(b.time));
+    // Filtrer aujourd'hui + impact medium/high
+    const events = raw
+      .filter(e => {
+        const d = (e.date || '').slice(0, 10);
+        const imp = (e.impact || '').toLowerCase();
+        return d === today && (imp === 'high' || imp === 'medium');
+      })
+      .map(e => ({
+        time:     formatTime(e.date),
+        currency: e.currency || '',
+        title:    e.title || '',
+        impact:   (e.impact || '').toLowerCase(),
+        forecast: e.forecast || '',
+        previous: e.previous || '',
+        actual:   e.actual   || '',
+      }))
+      .sort((a, b) => a.time.localeCompare(b.time));
 
-      if (!events.length) {
-        // Retourner quand même les événements du jour même si 0 medium/high
-        const all = raw.filter(e => (e.date||'').slice(0,10) === today);
-        return res.status(200).json({ events: all.slice(0,10), date: today, total: all.length });
-      }
+    return res.status(200).json({
+      events,
+      date: today,
+      total: events.length,
+      debug: { sample, allDates, today },
+    });
 
-      return res.status(200).json({ events, date: today, total: events.length });
-
-    } catch {}
+  } catch(e) {
+    return res.status(500).json({ error: e.message });
   }
+}
 
-  return res.status(500).json({ error: 'Feed Forex Factory indisponible' });
+function formatTime(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    return new Date(dateStr).toLocaleTimeString('fr-FR', {
+      hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris'
+    });
+  } catch { return '—'; }
 }
