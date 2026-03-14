@@ -6,7 +6,6 @@ export default async function handler(req, res) {
   const SB_KEY = 'N2988LVIP0TLELZVBUUCM0098RSW2QQ01NERRNFC3HTAQBYTX91EJ3WWSMC8AG49UL6RMUEWMHU5R51R';
 
   try {
-    // Page BTC liquidations avec JS rendu + attente 5s pour charger les données
     const target = 'https://www.coinglass.com/liquidations/BTC';
     const sbUrl  = `https://app.scrapingbee.com/api/v1/?api_key=${SB_KEY}&url=${encodeURIComponent(target)}&render_js=true&wait=5000&premium_proxy=false&block_ads=true`;
 
@@ -15,65 +14,67 @@ export default async function handler(req, res) {
     const html = await r.text();
     if (!html || html.length < 500) throw new Error('HTML vide');
 
-    // Chercher les patterns de liquidation dans le HTML rendu
-    // CoinGlass affiche : "$249.53M" ou "249.53M" pour le total
-    // Pattern 1 : montants > $10M (pour filtrer les petits chiffres parasites)
-    const bigAmounts = [...html.matchAll(/\$\s*([\d,]+\.?\d*)\s*([MB])/g)]
-      .map(m => ({
-        raw: m[0].trim(),
-        val: parseFloat(m[1].replace(/,/g,'')),
-        unit: m[2],
-        usd: parseFloat(m[1].replace(/,/g,'')) * (m[2]==='B'?1e9:1e6),
-      }))
-      .filter(m => m.usd >= 10e6) // garder seulement > $10M
-      .sort((a,b) => b.usd - a.usd);
+    // Cibler la section "24h Rekt" dans le HTML rendu
+    const idx = html.indexOf('24h Rekt') !== -1 ? html.indexOf('24h Rekt')
+              : html.indexOf('24 hour')  !== -1 ? html.indexOf('24 hour')
+              : -1;
 
-    // Chercher "Long" et "Short" avec montants
-    // Pattern CoinGlass : "Long $74.12M" ou "74.12M" près de "Long"
-    const longRegex  = /[Ll]ong[\s\S]{0,50}?\$([\d,.]+)\s*([MB])/;
-    const shortRegex = /[Ss]hort[\s\S]{0,50}?\$([\d,.]+)\s*([MB])/;
-    const lm = html.match(longRegex);
-    const sm = html.match(shortRegex);
+    let total = 0, longVal = 0, shortVal = 0;
 
-    const parseM = m => m ? parseFloat(m[1].replace(/,/g,'')) * (m[2]==='B'?1e9:1e6) : 0;
-    let longVal  = parseM(lm);
-    let shortVal = parseM(sm);
+    if (idx >= 0) {
+      const zone = html.slice(idx, idx + 600);
+      const amounts = [...zone.matchAll(/\$([\d,.]+)\s*([MBK]?)/g)].map(m => ({
+        usd: parseFloat(m[1].replace(/,/g,'')) * (m[2]==='B'?1e9:m[2]==='M'?1e6:m[2]==='K'?1e3:1),
+      })).filter(a => a.usd >= 1e4);
 
-    // Si Long/Short non trouvés, utiliser les 2 plus grands montants
-    if (!longVal && !shortVal && bigAmounts.length >= 2) {
-      // Le total est généralement le plus grand, Long/Short sont les suivants
-      longVal  = bigAmounts[1]?.usd || 0;
-      shortVal = bigAmounts[2]?.usd || 0;
+      if (amounts.length >= 3) {
+        total    = amounts[0].usd;
+        longVal  = amounts[1].usd;
+        shortVal = amounts[2].usd;
+      } else if (amounts.length === 2) {
+        longVal  = amounts[0].usd;
+        shortVal = amounts[1].usd;
+        total    = longVal + shortVal;
+      } else if (amounts.length === 1) {
+        total = amounts[0].usd;
+      }
     }
 
-    // Total = plus grand montant trouvé ou somme Long+Short
-    const total = bigAmounts[0]?.usd || (longVal + shortVal);
+    // Fallback pattern direct
+    if (total < 1e6) {
+      const m = html.match(/24h?\s*[Rr]ekt[\s\S]{0,30}?\$([\d,.]+)([MBK]?)[\s\S]{0,100}?[Ll]ong[\s\S]{0,20}?\$([\d,.]+)([MBK]?)[\s\S]{0,100}?[Ss]hort[\s\S]{0,20}?\$([\d,.]+)([MBK]?)/s);
+      if (m) {
+        const p = (v, u) => parseFloat(v.replace(/,/g,'')) * (u==='B'?1e9:u==='M'?1e6:u==='K'?1e3:1);
+        total    = p(m[1], m[2]);
+        longVal  = p(m[3], m[4]);
+        shortVal = p(m[5], m[6]);
+      }
+    }
 
-    if (total < 10e6) {
-      // Retourner debug pour analyser
+    if (total < 1e6) {
       return res.status(200).json({
         debug: true,
         htmlLength: html.length,
-        bigAmounts: bigAmounts.slice(0,10),
-        longMatch: lm ? lm[0] : null,
-        shortMatch: sm ? sm[0] : null,
-        sample: html.slice(500, 2500),
+        idx24h: idx,
+        zone: idx >= 0 ? html.slice(idx, idx + 500) : 'not found',
+        sample: html.slice(2000, 4000),
       });
     }
 
-    const longFinal  = longVal  || total * 0.3;
-    const shortFinal = shortVal || total * 0.7;
-    const tot = longFinal + shortFinal;
-    const longPct  = (longFinal  / tot * 100).toFixed(1);
-    const shortPct = (shortFinal / tot * 100).toFixed(1);
-    const dom = shortFinal > longFinal ? 'shorts' : 'longs';
-    const domPct = dom === 'shorts' ? shortPct : longPct;
+    // Recalculer total si incohérent
+    if (longVal > 0 && shortVal > 0) total = longVal + shortVal;
+
+    const tot      = total;
+    const longPct  = tot > 0 && longVal  > 0 ? (longVal  / tot * 100).toFixed(1) : '0';
+    const shortPct = tot > 0 && shortVal > 0 ? (shortVal / tot * 100).toFixed(1) : '0';
+    const dom      = longVal > shortVal ? 'longs' : 'shorts';
+    const domPct   = dom === 'longs' ? longPct : shortPct;
 
     return res.status(200).json({
       source: 'CoinGlass · ScrapingBee',
-      total:  fmtUsd(total),
-      long:   fmtUsd(longFinal),
-      short:  fmtUsd(shortFinal),
+      total:  fmtUsd(tot),
+      long:   fmtUsd(longVal),
+      short:  fmtUsd(shortVal),
       longPct, shortPct, dom, domPct,
     });
 
@@ -83,7 +84,8 @@ export default async function handler(req, res) {
 }
 
 function fmtUsd(n) {
+  if (!n || isNaN(n)) return '—';
   if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
   if (n >= 1e6) return '$' + (n/1e6).toFixed(0) + 'M';
-  return '$' + Math.round(n).toLocaleString();
+  return '$' + Math.round(n/1e3) + 'K';
 }
