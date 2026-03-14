@@ -13,55 +13,51 @@ export default async function handler(req, res) {
     if (!r.ok) throw new Error('ScrapingBee ' + r.status);
     const html = await r.text();
 
-    // ── 1. TOTAL 24h — depuis "24h Liquidation" (toutes cryptos)
-    // Format : >24h Liquidation<...>$147,855,521</
+    // ── TOTAL — "24h Liquidation" (toutes cryptos, toutes exchanges)
     let total = 0;
     const totalMatch = html.match(/24h Liquidation[\s\S]{0,200}?\$([\d,]+)/);
     if (totalMatch) total = parseFloat(totalMatch[1].replace(/,/g,''));
 
-    // ── 2. LONG/SHORT ratio — depuis "24h Long/Short"
-    // Format : >24h Long/Short <...>49.75%/50.25%</
-    let longPct = 0, shortPct = 0;
-    const lsMatch = html.match(/24h Long\/Short[\s\S]{0,100}?([\d.]+)%\/([\d.]+)%/);
-    if (lsMatch) {
-      longPct  = parseFloat(lsMatch[1]);
-      shortPct = parseFloat(lsMatch[2]);
-    }
-
-    // ── 3. LONG/SHORT en valeur depuis "24h Rekt" BTC
-    // Format : aria-label="42,793,608.627">$42.79M (Long) et Short
+    // ── LONG / SHORT — aria-label dans la zone "24h Rekt"
+    // Format exact : aria-label="112,670,xxx">$112.67M (Long) puis aria-label="32,720,xxx">$32.72M (Short)
     let longVal = 0, shortVal = 0;
     const rektIdx = html.indexOf('24h Rekt');
     if (rektIdx >= 0) {
-      const zone = html.slice(rektIdx, rektIdx + 600);
+      const zone = html.slice(rektIdx, rektIdx + 800);
       const ariaVals = [...zone.matchAll(/aria-label="([\d,.]+)"/g)]
         .map(m => parseFloat(m[1].replace(/,/g,'')));
-      // 1er = total BTC, 2ème = Long BTC, 3ème = Short BTC
+      // Position 0 = total BTC rekt, 1 = Long BTC, 2 = Short BTC
       if (ariaVals.length >= 3) {
         longVal  = ariaVals[1];
         shortVal = ariaVals[2];
+      } else if (ariaVals.length === 2) {
+        longVal  = ariaVals[0];
+        shortVal = ariaVals[1];
       }
-    }
-
-    // Calculer long/short en USD à partir du total + ratio si disponibles
-    if (total > 0 && longPct > 0) {
-      longVal  = total * longPct  / 100;
-      shortVal = total * shortPct / 100;
     }
 
     if (total < 1e6) throw new Error('Total trop faible: ' + total);
 
-    const lPct = longPct  > 0 ? longPct.toFixed(1)  : longVal  > 0 ? (longVal  / total * 100).toFixed(1) : '—';
-    const sPct = shortPct > 0 ? shortPct.toFixed(1) : shortVal > 0 ? (shortVal / total * 100).toFixed(1) : '—';
-    const dom    = parseFloat(lPct) > parseFloat(sPct) ? 'longs' : 'shorts';
-    const domPct = dom === 'longs' ? lPct : sPct;
+    // Si long/short non trouvés, fallback proportionnel
+    if (longVal === 0 && shortVal === 0) {
+      longVal  = total * 0.5;
+      shortVal = total * 0.5;
+    }
+
+    const tot     = longVal + shortVal || total;
+    const lPct    = (longVal  / tot * 100).toFixed(1);
+    const sPct    = (shortVal / tot * 100).toFixed(1);
+    const dom     = longVal > shortVal ? 'longs' : 'shorts';
+    const domPct  = dom === 'longs' ? lPct : sPct;
 
     return res.status(200).json({
-      source: 'CoinGlass · ScrapingBee',
-      total:  fmtUsd(total),
-      long:   longVal  > 0 ? fmtUsd(longVal)  : lPct + '%',
-      short:  shortVal > 0 ? fmtUsd(shortVal) : sPct + '%',
-      longPct: lPct, shortPct: sPct, dom, domPct,
+      source:   'CoinGlass · ScrapingBee',
+      total:    fmtUsd(total),
+      long:     fmtUsd(longVal),
+      short:    fmtUsd(shortVal),
+      longPct:  lPct,
+      shortPct: sPct,
+      dom, domPct,
     });
 
   } catch (e) {
