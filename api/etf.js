@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Cache-Control', 's-maxage=3600'); // cache 1h pour économiser les crédits
 
-  const SB_KEY = 'bb4bb63c8eb64f9f8e2eb40ed80aced17b5a5488157';
+  const SB_KEY = 'N2988LVIP0TLELZVBUUCM0098RSW2QQ01NERRNFC3HTAQBYTX91EJ3WWSMC8AG49UL6RMUEWMHU5R51R';
   const TARGET = 'https://farside.co.uk/btc/';
 
   try {
