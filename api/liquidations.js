@@ -16,49 +16,34 @@ export default async function handler(req, res) {
     let total = 0;
     const totalMatch = html.match(/24h Liquidation[\s\S]{0,200}?\$([\d,]+)/);
     if (totalMatch) total = parseFloat(totalMatch[1].replace(/,/g, ''));
+    if (total < 1e6) throw new Error('Total non trouvé');
 
-    // ── Long/Short depuis aria-label dans la zone "24h Rekt"
+    // ── Long/Short depuis valeurs texte "$75.10M" dans zone "24h Rekt"
     let longVal = 0, shortVal = 0;
     const rektIdx = html.indexOf('24h Rekt');
     if (rektIdx >= 0) {
-      const zone = html.slice(rektIdx, rektIdx + 800);
-      const ariaVals = [...zone.matchAll(/aria-label="([\d,.]+)"/g)]
-        .map(m => parseFloat(m[1].replace(/,/g, '')));
-      // [0]=total BTC, [1]=Long, [2]=Short
-      if (ariaVals.length >= 3) { longVal = ariaVals[1]; shortVal = ariaVals[2]; }
+      const zone = html.slice(rektIdx, rektIdx + 600);
+      const amounts = [...zone.matchAll(/\$([\d.]+)([MBK])/g)].map(m => {
+        const v = parseFloat(m[1]);
+        const u = m[2];
+        return u==='B' ? v*1e9 : u==='M' ? v*1e6 : v*1e3;
+      }).filter(v => v >= 1e4);
+      // [0]=total rekt, [1]=Long, [2]=Short
+      if (amounts.length >= 3) { longVal = amounts[1]; shortVal = amounts[2]; }
+      else if (amounts.length === 2) { longVal = amounts[0]; shortVal = amounts[1]; }
     }
 
-    // ── Fallback ratio depuis "24h Long/Short xx%/yy%"
-    if (!longVal && !shortVal && total > 0) {
-      const lsMatch = html.match(/24h Long\/Short[\s\S]{0,100}?([\d.]+)%\/([\d.]+)%/);
-      if (lsMatch) {
-        longVal  = total * parseFloat(lsMatch[1]) / 100;
-        shortVal = total * parseFloat(lsMatch[2]) / 100;
-      }
-    }
-
-    if (total < 1e6) throw new Error('Données insuffisantes');
-
-    // DEBUG temporaire
-    return res.status(200).json({
-      debug: true,
-      total: fmtUsd(total),
-      rektIdx,
-      ariaZone: rektIdx >= 0 ? html.slice(rektIdx, rektIdx + 600) : 'NOT FOUND',
-      lsMatch: html.match(/24h Long\/Short[\s\S]{0,150}?([\d.]+)%\/([\d.]+)%/)?.[0] || 'not found',
-    });
-
+    // Recalculer total depuis long+short si cohérent
     if (longVal > 0 && shortVal > 0) {
-      // recalculer le total depuis long+short si plus précis
       const tot2 = longVal + shortVal;
-      if (Math.abs(tot2 - total) / total < 0.3) total = tot2;
+      if (Math.abs(tot2 - total) / total < 0.25) total = tot2;
     }
 
-    const tot     = longVal + shortVal || total;
-    const lPct    = tot > 0 && longVal  > 0 ? (longVal  / tot * 100).toFixed(1) : '—';
-    const sPct    = tot > 0 && shortVal > 0 ? (shortVal / tot * 100).toFixed(1) : '—';
-    const dom     = longVal > shortVal ? 'longs' : 'shorts';
-    const domPct  = dom === 'longs' ? lPct : sPct;
+    const tot    = longVal + shortVal || total;
+    const lPct   = tot > 0 && longVal  > 0 ? (longVal  / tot * 100).toFixed(1) : '—';
+    const sPct   = tot > 0 && shortVal > 0 ? (shortVal / tot * 100).toFixed(1) : '—';
+    const dom    = longVal > shortVal ? 'longs' : 'shorts';
+    const domPct = dom === 'longs' ? lPct : sPct;
 
     return res.status(200).json({
       source: 'CoinGlass',
