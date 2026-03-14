@@ -39,6 +39,15 @@ export default async function handler(req, res) {
 
     if (total < 1e6) throw new Error('Données insuffisantes');
 
+    // DEBUG temporaire
+    return res.status(200).json({
+      debug: true,
+      total: fmtUsd(total),
+      rektIdx,
+      ariaZone: rektIdx >= 0 ? html.slice(rektIdx, rektIdx + 600) : 'NOT FOUND',
+      lsMatch: html.match(/24h Long\/Short[\s\S]{0,150}?([\d.]+)%\/([\d.]+)%/)?.[0] || 'not found',
+    });
+
     if (longVal > 0 && shortVal > 0) {
       // recalculer le total depuis long+short si plus précis
       const tot2 = longVal + shortVal;
