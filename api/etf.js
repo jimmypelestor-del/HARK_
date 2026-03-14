@@ -34,26 +34,34 @@ export default async function handler(req, res) {
 
     if (!dataRows.length) throw new Error('no rows');
 
+    const parseVal = v => {
+      if (!v || v === '—') return 0;
+      // Farside écrit les négatifs entre parenthèses : (88.7) = -88.7
+      const neg = v.trim().match(/^\(([0-9.]+)\)$/);
+      if (neg) return -parseFloat(neg[1]);
+      return parseFloat(v) || 0;
+    };
+
     const gi = n => headers.findIndex(h => h === n);
     const last = dataRows[dataRows.length - 1];
 
     const topFlows = headers.slice(1, headers.length - 1)
-      .map((h, i) => ({ name: h, val: parseFloat(last[i+1]) || 0 }))
+      .map((h, i) => ({ name: h, val: parseVal(last[i+1]) }))
       .filter(f => f.val !== 0 && f.name)
       .sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
 
     const history = dataRows.slice(-10).map(r => ({
       date:  r[0].replace(' 2026','').replace(' 2025',''),
-      total: parseFloat(r[r.length-1]) || 0,
+      total: parseVal(r[r.length-1]),
     }));
 
     return res.status(200).json({
       date:  last[0] || '—',
-      total: last[last.length-1] || '—',
-      ibit:  gi('IBIT') >= 0 ? (last[gi('IBIT')] || '—') : '—',
-      fbtc:  gi('FBTC') >= 0 ? (last[gi('FBTC')] || '—') : '—',
-      gbtc:  gi('GBTC') >= 0 ? (last[gi('GBTC')] || '—') : '—',
-      arkb:  gi('ARKB') >= 0 ? (last[gi('ARKB')] || '—') : '—',
+      total: parseVal(last[last.length-1]),
+      ibit:  gi('IBIT') >= 0 ? parseVal(last[gi('IBIT')]) : '—',
+      fbtc:  gi('FBTC') >= 0 ? parseVal(last[gi('FBTC')]) : '—',
+      gbtc:  gi('GBTC') >= 0 ? parseVal(last[gi('GBTC')]) : '—',
+      arkb:  gi('ARKB') >= 0 ? parseVal(last[gi('ARKB')]) : '—',
       topFlows: topFlows.slice(0, 5),
       history,
     });
