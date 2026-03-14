@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const SB = 'N2988LVIP0TLELZVBUUCM0098RSW2QQ01NERRNFC3HTAQBYTX91EJ3WWSMC8AG49UL6RMUEWMHU5R51R';
 
   try {
-    const target = 'https://www.coinglass.com/liquidations/BTC';
+    const target = 'https://www.coinglass.com/liquidations';
     const sbUrl  = `https://app.scrapingbee.com/api/v1/?api_key=${SB}&url=${encodeURIComponent(target)}&render_js=true&wait=8000&block_ads=true`;
 
     const r = await fetch(sbUrl, { signal: AbortSignal.timeout(35000) });
