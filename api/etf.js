@@ -64,7 +64,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const getIdx = n => headers.findIndex(h => h === n);
+    const getIdx = n => headers.findIndex(h => h.trim() === n || h.includes(n));
     const ti = getIdx('Total');
     const ii = getIdx('IBIT');
     const fi = getIdx('FBTC');
@@ -73,32 +73,48 @@ export default async function handler(req, res) {
 
     const last = dataRows[dataRows.length - 1];
 
-    // Top flux du jour
-    const topFlows = [];
-    if (headers.length > 0 && ti > 0) {
-      headers.slice(1, ti).forEach((h, i) => {
-        const val = parseFloat(last[i + 1]) || 0;
-        if (val !== 0 && h) topFlows.push({ name: h, val });
-      });
-      topFlows.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
+    // Si Total non trouvé, calculer la somme de toutes les colonnes ETF
+    let totalVal;
+    if (ti >= 0 && last[ti] && last[ti] !== '') {
+      totalVal = last[ti];
+    } else {
+      // Sommer toutes les valeurs numériques de la ligne (sauf date)
+      let sum = 0;
+      last.slice(1).forEach(v => { const n = parseFloat(v); if(!isNaN(n)) sum += n; });
+      totalVal = sum !== 0 ? sum.toFixed(1) : '—';
     }
 
-    // Historique 10 derniers jours
-    const history = dataRows.slice(-10).map(row => ({
-      date:  row[0],
-      total: ti >= 0 ? (parseFloat(row[ti]) || 0) : 0,
-    }));
+    // Historique 10 jours — calculer total si colonne manquante
+    const history = dataRows.slice(-10).map(row => {
+      let t;
+      if (ti >= 0 && row[ti] && row[ti] !== '') {
+        t = parseFloat(row[ti]) || 0;
+      } else {
+        t = row.slice(1).reduce((s, v) => s + (parseFloat(v) || 0), 0);
+      }
+      return { date: row[0], total: parseFloat(t.toFixed ? t.toFixed(1) : t) || 0 };
+    });
+
+    // Top flux du jour
+    const topFlows = [];
+    const endIdx = ti > 0 ? ti : headers.length;
+    headers.slice(1, endIdx).forEach((h, i) => {
+      const val = parseFloat(last[i + 1]) || 0;
+      if (val !== 0 && h) topFlows.push({ name: h, val });
+    });
+    topFlows.sort((a, b) => Math.abs(b.val) - Math.abs(a.val));
 
     return res.status(200).json({
       source: 'Farside via ScrapingBee',
       date:   last[0] || '—',
-      total:  ti >= 0 ? (last[ti] || '—') : '—',
+      total:  totalVal,
       ibit:   ii >= 0 ? (last[ii] || '—') : '—',
       fbtc:   fi >= 0 ? (last[fi] || '—') : '—',
       gbtc:   gi >= 0 ? (last[gi] || '—') : '—',
       arkb:   ai >= 0 ? (last[ai] || '—') : '—',
       topFlows: topFlows.slice(0, 5),
       history,
+      debug: { headers, totalIdx: ti, lastRow: last }
     });
 
   } catch (e) {
