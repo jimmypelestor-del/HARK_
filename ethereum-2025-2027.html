@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethereum 2025–2027 : Le Cycle de la Maturité</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b10;
+    --bg2: #0c1018;
+    --surface: #111620;
+    --surface2: #161d2a;
+    --border: rgba(255,255,255,0.07);
+    --eth: #627EEA;
+    --eth-light: #8fa3f0;
+    --eth-glow: rgba(98,126,234,0.3);
+    --gold: #e8c97a;
+    --red: #e05c5c;
+    --green: #4ecb71;
+    --text: #d8dde8;
+    --text-muted: #6b7590;
+    --text-dim: #3a4155;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--eth), var(--gold));
+    z-index: 999;
+    width: 0%;
+    transition: width 0.1s;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(8,11,16,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+  nav.scrolled { border-bottom-color: var(--border); }
+
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .nav-logo span { color: var(--eth); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--eth-light); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 48px;
+    text-align: center;
+    perspective: 1200px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 110%, rgba(98,126,234,0.28) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 50% at 15% 25%, rgba(98,126,234,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse 40% 40% at 85% 15%, rgba(232,201,122,0.09) 0%, transparent 50%),
+      radial-gradient(ellipse 30% 30% at 70% 80%, rgba(98,126,234,0.08) 0%, transparent 50%);
+  }
+
+  /* 3D PERSPECTIVE GRID */
+  .hero-grid {
+    position: absolute;
+    inset: -20% -10%;
+    background-image:
+      linear-gradient(rgba(98,126,234,0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(98,126,234,0.18) 1px, transparent 1px);
+    background-size: 70px 70px;
+    transform: rotateX(55deg) translateY(30%) scale(1.4);
+    transform-origin: center bottom;
+    mask-image: linear-gradient(to top, black 0%, rgba(0,0,0,0.6) 40%, transparent 70%);
+    animation: gridShift 8s ease-in-out infinite alternate;
+  }
+  @keyframes gridShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 70px 70px; }
+  }
+
+  /* Floating orbs */
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  .hero-orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(98,126,234,0.22) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    animation: orbFloat1 12s ease-in-out infinite;
+  }
+  .hero-orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(232,201,122,0.12) 0%, transparent 70%);
+    bottom: -50px; right: -50px;
+    animation: orbFloat2 15s ease-in-out infinite;
+  }
+  .hero-orb-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(78,203,113,0.08) 0%, transparent 70%);
+    top: 40%; left: 60%;
+    animation: orbFloat3 10s ease-in-out infinite;
+  }
+  @keyframes orbFloat1 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(80px, 60px) scale(1.15); }
+  }
+  @keyframes orbFloat2 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(-60px, -40px) scale(1.1); }
+  }
+  @keyframes orbFloat3 {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(-40px, 50px); }
+  }
+
+  /* 3D Diamond — multiple layers */
+  .hero-diamond-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 700px;
+    pointer-events: none;
+  }
+  .hero-diamond {
+    position: absolute;
+    inset: 0;
+    animation: rotateDiamond 50s linear infinite;
+  }
+  .hero-diamond-2 {
+    position: absolute;
+    inset: 80px;
+    animation: rotateDiamond 30s linear infinite reverse;
+    opacity: 0.6;
+  }
+  .hero-diamond-3 {
+    position: absolute;
+    inset: 160px;
+    animation: rotateDiamond 20s linear infinite;
+    opacity: 0.4;
+  }
+
+  @keyframes rotateDiamond {
+    to { transform: rotate(360deg); }
+  }
+
+  /* 3D card hero-content */
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 900px;
+    transform-style: preserve-3d;
+  }
+
+  /* Glowing line under hero title */
+  .hero-glow-line {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--eth), var(--gold), transparent);
+    margin: 0 auto 40px;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s ease 1s forwards;
+  }
+  .hero-glow-line::after {
+    content: '';
+    position: absolute;
+    top: -4px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 8px;
+    background: linear-gradient(90deg, transparent, rgba(98,126,234,0.5), transparent);
+    filter: blur(4px);
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--eth);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border: 1px solid rgba(98,126,234,0.3);
+    border-radius: 2px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--eth);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero h1 .line1 { display: block; color: #fff; }
+  .hero h1 .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--eth) 0%, var(--eth-light) 40%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero h1 .line3 {
+    display: block;
+    color: var(--text-dim);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.55em;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--text-muted);
+    max-width: 540px;
+    margin: 0 auto 48px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .hero-meta-item {
+    text-align: center;
+  }
+  .hero-meta-item .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+  }
+  .hero-meta-item .val.eth { color: var(--eth-light); }
+  .hero-meta-item .val.gold { color: var(--gold); }
+  .hero-meta-item .val.green { color: var(--green); }
+  .hero-meta-item .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+  }
+  .hero-scroll span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(180deg, var(--eth) 0%, transparent 100%);
+    animation: scrollLine 2s ease infinite;
+  }
+  @keyframes scrollLine {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ─── SECTIONS ─── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  section {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+    perspective: 1000px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 64px;
+  }
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--eth);
+    letter-spacing: 0.15em;
+    min-width: 32px;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--eth-glow), transparent);
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(34px, 5vw, 58px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 32px;
+  }
+  h2 em {
+    font-style: italic;
+    color: var(--eth-light);
+  }
+
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.85;
+    margin-bottom: 24px;
+  }
+  p:last-child { margin-bottom: 0; }
+
+  strong {
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /* ─── PRICE CHART ─── */
+  .chart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 32px;
+    margin: 48px 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(98,126,234,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
+    transition: box-shadow 0.4s, transform 0.4s;
+  }
+  .chart-wrap:hover {
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 60px rgba(98,126,234,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(-4px);
+  }
+  .chart-wrap::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--eth), transparent);
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+  .chart-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .chart-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .chart-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    margin-left: 12px;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  canvas#priceChart { width: 100% !important; height: 300px !important; }
+
+  /* ─── TIMELINE ─── */
+  .timeline {
+    position: relative;
+    margin: 48px 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, var(--eth), rgba(98,126,234,0.1));
+  }
+
+  .tl-item {
+    padding-left: 40px;
+    padding-bottom: 56px;
+    position: relative;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .tl-item.visible { opacity: 1; transform: translateX(0); }
+
+  .tl-dot {
+    position: absolute;
+    left: -5px;
+    top: 6px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--eth);
+  }
+  .tl-dot.active {
+    background: var(--eth);
+    box-shadow: 0 0 12px var(--eth-glow);
+  }
+
+  .tl-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--eth);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .tl-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px 28px;
+    transition: border-color 0.3s, transform 0.4s ease, box-shadow 0.4s ease;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  .tl-card:hover {
+    border-color: rgba(98,126,234,0.5);
+    transform: translateY(-6px) rotateX(3deg);
+    box-shadow: 0 24px 60px rgba(98,126,234,0.18), 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  .tl-card h3 { font-size: 20px; margin-bottom: 12px; }
+
+  /* ─── STAT GRID ─── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  .stat-cell {
+    background: var(--surface);
+    padding: 32px 28px;
+    text-align: center;
+    transition: background 0.3s;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.3s, box-shadow 0.4s;
+  }
+  .stat-cell.visible { opacity: 1; transform: translateY(0); }
+  .stat-cell:hover {
+    background: var(--surface2);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(98,126,234,0.2), 0 0 0 1px rgba(98,126,234,0.3);
+    z-index: 2;
+    position: relative;
+  }
+
+  .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  .stat-val.eth { color: var(--eth-light); }
+  .stat-val.gold { color: var(--gold); }
+  .stat-val.green { color: var(--green); }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .stat-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* ─── QUOTE BLOCK ─── */
+  .quote-block {
+    border-left: 2px solid var(--eth);
+    padding: 32px 40px;
+    margin: 48px 0;
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(98,126,234,0.05) 100%);
+    position: relative;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4), -4px 0 20px rgba(98,126,234,0.1), inset 0 0 40px rgba(98,126,234,0.03);
+    transition: transform 0.4s ease, box-shadow 0.4s;
+  }
+  .quote-block:hover {
+    transform: translateX(6px);
+    box-shadow: 0 12px 50px rgba(0,0,0,0.5), -6px 0 30px rgba(98,126,234,0.2);
+  }
+  .quote-block::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 120px;
+    color: var(--eth);
+    opacity: 0.1;
+    position: absolute;
+    top: -20px;
+    left: 16px;
+    line-height: 1;
+  }
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: #fff;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 16px;
+  }
+  .quote-author {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  /* ─── SCENARIOS ─── */
+  .scenarios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 48px 0;
+  }
+
+  .scenario-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) rotateX(8deg);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.4s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+  }
+  .scenario-card.visible:hover {
+    transform: translateY(-10px) rotateX(-2deg) rotateY(2deg) scale(1.02);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(98,126,234,0.12);
+  }
+  .scenario-card.bull.visible:hover { box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(78,203,113,0.2); }
+  .scenario-card.base.visible:hover { box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(98,126,234,0.2); }
+  .scenario-card.bear.visible:hover { box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(224,92,92,0.2); }
+  .scenario-card.visible { opacity: 1; transform: translateY(0) rotateX(0deg); }
+  .scenario-card:nth-child(2) { transition-delay: 0.1s; }
+  .scenario-card:nth-child(3) { transition-delay: 0.2s; }
+
+  .scenario-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .scenario-card.bull::after { background: var(--green); }
+  .scenario-card.base::after { background: var(--eth); }
+  .scenario-card.bear::after { background: var(--red); }
+
+  .sc-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .scenario-card.bull .sc-type { color: var(--green); }
+  .scenario-card.base .sc-type { color: var(--eth-light); }
+  .scenario-card.bear .sc-type { color: var(--red); }
+
+  .sc-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+  .sc-range {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 20px;
+  }
+  .sc-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin: 0; }
+
+  .sc-proba {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sc-bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .sc-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1.5s ease;
+    width: 0;
+  }
+  .scenario-card.bull .sc-bar { background: var(--green); }
+  .scenario-card.base .sc-bar { background: var(--eth); }
+  .scenario-card.bear .sc-bar { background: var(--red); }
+  .sc-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 32px;
+  }
+
+  /* ─── DATA TABLE ─── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 48px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .data-table thead tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+    font-weight: 300;
+  }
+  .data-table tbody tr:hover td { background: var(--surface); }
+  .data-table td.num { text-align: right; }
+  .data-table td.pos { color: var(--green); }
+  .data-table td.neg { color: var(--red); }
+  .data-table td.neu { color: var(--eth-light); }
+
+  /* ─── CATALYSTS ─── */
+  .catalyst-list {
+    list-style: none;
+    margin: 32px 0;
+  }
+  .catalyst-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  .catalyst-list li.visible { opacity: 1; transform: translateX(0); }
+  .catalyst-list li:nth-child(2) { transition-delay: 0.1s; }
+  .catalyst-list li:nth-child(3) { transition-delay: 0.2s; }
+  .catalyst-list li:nth-child(4) { transition-delay: 0.3s; }
+  .catalyst-list li:nth-child(5) { transition-delay: 0.4s; }
+
+  .cat-icon {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+  .cat-body {}
+  .cat-title {
+    font-weight: 500;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .cat-desc { font-size: 14px; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 64px 0;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-symbol {
+    width: 28px; height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ─── RISK SECTION ─── */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 32px 0;
+  }
+  .risk-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px;
+    transition: transform 0.35s cubic-bezier(0.34,1.3,0.64,1), box-shadow 0.35s, border-color 0.3s;
+    transform-style: preserve-3d;
+  }
+  .risk-card:hover {
+    transform: translateY(-8px) rotateX(3deg) rotateY(-2deg);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(98,126,234,0.1);
+    border-color: rgba(98,126,234,0.25);
+  }
+  .risk-card h4 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .risk-card h4 .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .badge.high { background: rgba(224,92,92,0.2); color: var(--red); }
+  .badge.med { background: rgba(232,201,122,0.15); color: var(--gold); }
+  .badge.low { background: rgba(78,203,113,0.15); color: var(--green); }
+  .risk-card p { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 64px 48px;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+  .footer-logo span { color: var(--eth); }
+  .footer-disclaimer {
+    font-size: 12px;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .footer-bottom {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 24px; }
+    .container { padding: 0 24px; }
+    .hero h1 { font-size: 48px; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .scenarios { grid-template-columns: 1fr; }
+    .risk-grid { grid-template-columns: 1fr; }
+    footer { padding: 48px 24px; }
+  }
+
+  /* ─── HERO META GLASS 3D CARDS ─── */
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+  .hero-meta-card {
+    background: rgba(17, 22, 32, 0.7);
+    border: 1px solid rgba(98,126,234,0.2);
+    border-radius: 8px;
+    padding: 20px 32px;
+    backdrop-filter: blur(20px);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(255,255,255,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 0 40px rgba(98,126,234,0.08);
+    transition: transform 0.35s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.35s;
+    transform-style: preserve-3d;
+    cursor: default;
+  }
+  .hero-meta-card:hover {
+    transform: translateY(-10px) rotateX(-5deg) scale(1.05);
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(98,126,234,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 0 60px rgba(98,126,234,0.18);
+  }
+  .hero-meta-card--center {
+    border-color: rgba(232,201,122,0.3);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(255,255,255,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.1),
+      0 0 50px rgba(232,201,122,0.1);
+  }
+  .hero-meta-card--center:hover {
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(232,201,122,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.14),
+      0 0 80px rgba(232,201,122,0.2);
+  }
+
+  /* ─── SECTION 3D FLOATING CARD ENTRANCE ─── */
+  .tl-item { transform-style: preserve-3d; }
+
+  /* ─── CATALYST ITEMS 3D ─── */
+  .catalyst-list li {
+    transition: opacity 0.5s, transform 0.5s, box-shadow 0.3s;
+    border-radius: 4px;
+    padding: 20px 12px;
+    margin: 0 -12px;
+  }
+  .catalyst-list li.visible:hover {
+    background: rgba(17,22,32,0.8);
+    transform: translateX(8px) !important;
+    box-shadow: inset 2px 0 0 var(--eth), 4px 0 30px rgba(98,126,234,0.08);
+  }
+
+  /* ─── PARALLAX LAYERS ─── */
+  .parallax-slow { will-change: transform; }
+  .parallax-med { will-change: transform; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="navbar">
+  <div class="nav-logo"><span>ETH</span> / HARK · 2025–2027</div>
+  <ul class="nav-links">
+    <li><a href="#cycle">Cycle</a></li>
+    <li><a href="#catalysts">Catalyseurs</a></li>
+    <li><a href="#scenarios">Scénarios</a></li>
+    <li><a href="#risques">Risques</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <!-- Floating orbs -->
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <!-- 3D Multi-layer Diamond -->
+  <div class="hero-diamond-wrap">
+    <svg class="hero-diamond" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="100,10 190,75 100,130 10,75" stroke="#627EEA" stroke-width="0.8" fill="none" opacity="0.5"/>
+      <polygon points="100,130 190,75 100,190 10,75" stroke="#627EEA" stroke-width="0.8" fill="none" opacity="0.5"/>
+      <polygon points="100,10 100,190" stroke="#627EEA" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <polygon points="10,75 190,75" stroke="#627EEA" stroke-width="0.4" fill="none" opacity="0.3"/>
+      <circle cx="100" cy="100" r="88" stroke="#627EEA" stroke-width="0.4" fill="none" opacity="0.2"/>
+      <circle cx="100" cy="100" r="70" stroke="#e8c97a" stroke-width="0.3" fill="none" opacity="0.15" stroke-dasharray="4 6"/>
+    </svg>
+    <svg class="hero-diamond-2" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="100,5 195,70 195,130 100,195 5,130 5,70" stroke="#627EEA" stroke-width="0.8" fill="none" opacity="0.35"/>
+      <polygon points="100,30 170,75 170,125 100,170 30,125 30,75" stroke="#8fa3f0" stroke-width="0.5" fill="rgba(98,126,234,0.03)" opacity="0.5"/>
+      <line x1="100" y1="5" x2="100" y2="195" stroke="#627EEA" stroke-width="0.3" opacity="0.2"/>
+      <line x1="5" y1="100" x2="195" y2="100" stroke="#627EEA" stroke-width="0.3" opacity="0.2"/>
+    </svg>
+    <svg class="hero-diamond-3" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="80" stroke="#627EEA" stroke-width="1" fill="none" opacity="0.5" stroke-dasharray="2 8"/>
+      <polygon points="100,20 180,100 100,180 20,100" stroke="#e8c97a" stroke-width="0.8" fill="rgba(232,201,122,0.03)" opacity="0.6"/>
+      <circle cx="100" cy="20" r="4" fill="#627EEA" opacity="0.8"/>
+      <circle cx="180" cy="100" r="4" fill="#627EEA" opacity="0.8"/>
+      <circle cx="100" cy="180" r="4" fill="#627EEA" opacity="0.8"/>
+      <circle cx="20" cy="100" r="4" fill="#627EEA" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-tag">Rapport d'analyse · Édition 2025</div>
+    <h1>
+      <span class="line1">Ethereum</span>
+      <span class="line2">2025 — 2027</span>
+      <span class="line3">Le cycle de la maturité institutionnelle</span>
+    </h1>
+    <p class="hero-sub">
+      Une analyse approfondie du prochain cycle Ethereum : catalyseurs techniques, dynamiques macro, scénarios de prix et gestion du risque.
+    </p>
+    <div class="hero-glow-line"></div>
+    <div class="hero-meta">
+      <div class="hero-meta-item hero-meta-card">
+        <span class="val eth">~$2 121</span>
+        <span class="lbl">Prix actuel</span>
+      </div>
+      <div class="hero-meta-item hero-meta-card hero-meta-card--center">
+        <span class="val gold">$8 500</span>
+        <span class="lbl">Cible scénario base</span>
+      </div>
+      <div class="hero-meta-item hero-meta-card">
+        <span class="val green">ETH 2.0+</span>
+        <span class="lbl">Stade réseau</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Défiler</span>
+  </div>
+</div>
+
+<!-- ═══ SECTION 1 : CONTEXTE ═══ -->
+<section id="contexte">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Contexte de marché</span>
+    </div>
+
+    <h2>Après le creux, <em>l'accumulation</em></h2>
+
+    <p>
+      Le marché crypto a traversé entre 2022 et 2023 l'un de ses cycles baissiers les plus brutaux, effaçant plus de 70 % de la capitalisation totale. Ethereum a touché un plancher à <strong>880 $</strong> en juin 2022 avant d'amorcer une reconstruction lente et méthodique. En 2024, la validation des ETF Bitcoin spot aux États-Unis a marqué un tournant majeur : l'entrée officielle des capitaux institutionnels dans la classe d'actifs.
+    </p>
+
+    <p>
+      Ethereum entre en 2025 dans une phase que peu d'analystes avaient anticipée à cette vitesse : une <strong>convergence de catalyseurs techniques, réglementaires et macroéconomiques</strong> susceptible de propulser ETH vers des sommets historiques.
+    </p>
+
+    <div class="stat-grid">
+      <div class="stat-cell">
+        <span class="stat-val eth">$280 Md</span>
+        <span class="stat-label">Market cap Ethereum</span>
+        <p class="stat-sub">2ème asset crypto mondial</p>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-val gold">32 M+</span>
+        <span class="stat-label">ETH stakés</span>
+        <p class="stat-sub">~26 % de l'offre totale</p>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-val green">$50 Md+</span>
+        <span class="stat-label">TVL DeFi sur Ethereum</span>
+        <p class="stat-sub">Dominance persistante L1</p>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      <p class="quote-text">Ethereum n'est plus un pari spéculatif. C'est une infrastructure financière mondiale dont la sécurité économique dépasse celle de la plupart des États souverains.</p>
+      <p class="quote-author">Consensus parmi les analystes on-chain — Q1 2025</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 2 : GRAPHIQUE ═══ -->
+<section id="chart-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Analyse macro — TradingView</span>
+    </div>
+
+    <h2>ETH dans un <em>grand range</em> historique</h2>
+
+    <p>
+      Le graphique mensuel log d'Ethereum parle clairement : depuis 2021, ETH évolue à l'intérieur d'un <strong>grand range de consolidation</strong> délimité par deux niveaux structurels majeurs. Le support clé se situe autour des <strong>$950–1 450</strong> — plancher testé et tenu lors du cycle baissier 2022 — tandis que la résistance supérieure du range se situe à <strong>$4 900</strong>, zone des anciens sommets de cycle.
+    </p>
+    <p>
+      Avec un prix actuel à <strong>$2 121</strong>, ETH se trouve précisément au milieu de ce range, dans une position que les traders institutionnels qualifient de <em>no man's land</em> : ni en suracheté, ni en survente. C'est une zone d'accumulation silencieuse avant la résolution directionnelle du range.
+    </p>
+
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">ETH/USD · Mensuel · Échelle logarithmique · HARK</div>
+          <div style="display:flex;align-items:baseline;gap:12px;">
+            <div class="chart-price">$2 121</div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-muted)">Prix actuel · 15 mars 2026</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end;">
+          <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);">
+            <div style="width:28px;height:3px;background:var(--green);border-radius:2px;"></div>
+            Support range ~$950–1 450
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);">
+            <div style="width:28px;height:3px;background:var(--red);border-radius:2px;"></div>
+            Résistance range ~$4 900
+          </div>
+        </div>
+      </div>
+
+      <div style="position:relative;border-radius:3px;overflow:hidden;">
+        <img
+          src="ethereum-hero-v2.png"
+          alt="Visuel Ethereum avec toi à gauche, logo Ethereum au centre et avatar à droite"
+          style="width:100%;display:block;border-radius:3px;"
+        />
+        <div style="position:absolute;top:12px;right:12px;background:rgba(8,11,16,0.85);border:1px solid var(--border);padding:8px 14px;border-radius:3px;backdrop-filter:blur(8px);">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;">Source : TradingView · HARK</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:1px;">
+        <div style="background:var(--surface2);padding:16px 20px;text-align:center;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:6px;">Support range</span>
+          <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--green);">$950</span>
+        </div>
+        <div style="background:var(--surface2);padding:16px 20px;text-align:center;border-left:2px solid var(--eth);border-right:2px solid var(--eth);">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--eth-light);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:6px;">Position actuelle</span>
+          <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;">$2 121 <span style="font-size:13px;color:var(--text-muted);">milieu du range</span></span>
+        </div>
+        <div style="background:var(--surface2);padding:16px 20px;text-align:center;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:6px;">Résistance range</span>
+          <span style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--red);">$4 900</span>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--text-muted);margin-top:24px;padding:16px 20px;background:var(--surface);border-left:2px solid rgba(98,126,234,0.3);border-radius:0 3px 3px 0;">
+      <strong style="color:var(--text);">Lecture du range :</strong> Les oscillateurs en bas du graphique (momentum et cycle) confirment une <strong style="color:var(--eth-light);">compression à des niveaux bas historiques</strong> — signal précurseur classique d'une expansion de volatilité imminente. La résolution du range, haussière ou baissière, sera d'une ampleur majeure.
+    </p>
+  </div>
+</section>
+
+<!-- ═══ SECTION 3 : CYCLE ═══ -->
+<section id="cycle">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Analyse cyclique</span>
+    </div>
+
+    <h2>Le calendrier du <em>prochain cycle</em></h2>
+
+    <p>
+      L'analyse des cycles historiques d'Ethereum révèle une structure remarquablement régulière, corrélée au halving Bitcoin mais amplifiée par les upgrades internes du réseau. Le cycle 2025–2027 présente des particularités inédites qui pourraient en faire le plus puissant de l'histoire d'ETH.
+    </p>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot active"></div>
+        <div class="tl-year">Q1–Q2 2025</div>
+        <div class="tl-card">
+          <h3>Phase d'accumulation institutionnelle</h3>
+          <p>Approbation des ETF Ethereum spot. Entrée des family offices et fonds de pension sur ETH. Compression de l'offre en circulation due au staking. Les adresses dormantes supérieures à 1 000 ETH atteignent un pic historique.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">Q3 2025 – Q1 2026</div>
+        <div class="tl-card">
+          <h3>Rupture haussière & expansion</h3>
+          <p>Franchissement des <strong>$5 000</strong> puis <strong>$8 000</strong>. Narratif dominant : ETH comme "actif productif" avec un rendement de staking de 4–6 %. Les ETF génèrent des afflux nets hebdomadaires records. Boom des Layer 2 (Base, Arbitrum, zkSync) qui alimentent les frais.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">Q2 – Q4 2026</div>
+        <div class="tl-card">
+          <h3>Pic de cycle & euphorie</h3>
+          <p>Zone de résistance majeure entre <strong>$10 000 et $15 000</strong>. Adoption massive des applications DeFi institutionnelles. Tokenisation d'actifs réels (RWA) atteignant 500 Md$ de valeur verrouillée. Narratif : "Ultra-sound money" dominant.</p>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-year">Q1 2027</div>
+        <div class="tl-card">
+          <h3>Distribution & consolidation</h3>
+          <p>Prise de profits institutionnels. Volatilité accrue. Consolidation attendue entre <strong>$6 000 et $10 000</strong>. Les fondamentaux on-chain restent solides : le réseau ne faiblit pas, seul le sentiment spéculatif se contracte.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 4 : CATALYSEURS ═══ -->
+<section id="catalysts">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Moteurs de croissance</span>
+    </div>
+
+    <h2>Les <em>catalyseurs</em> déterminants</h2>
+
+    <p>
+      Cinq forces majeures convergent pour créer une configuration d'actif unique en 2025–2027. Contrairement aux cycles précédents, tirés essentiellement par la spéculation, ce cycle dispose de <strong>fondamentaux structurels</strong> sans précédent.
+    </p>
+
+    <ul class="catalyst-list">
+      <li>
+        <div class="cat-icon">🏛️</div>
+        <div class="cat-body">
+          <span class="cat-title">ETF Ethereum Spot — Adoption institutionnelle</span>
+          <p class="cat-desc">L'approbation des ETF ETH spot par la SEC ouvre la voie à des milliards de dollars d'afflux institutionnels. Les gestionnaires d'actifs comme BlackRock, Fidelity et Invesco proposent désormais ETH dans leurs portefeuilles. Projection : 20–40 Md$ d'entrées nettes sur 12 mois.</p>
+        </div>
+      </li>
+      <li>
+        <div class="cat-icon">🔷</div>
+        <div class="cat-body">
+          <span class="cat-title">Deflation monétaire — Ultra-sound money</span>
+          <p class="cat-desc">Depuis le Merge et EIP-1559, l'offre totale d'ETH est déflationniste lors des périodes d'activité élevée. Avec l'explosion des L2, les frais brûlés compressent mécaniquement l'offre. En cas de bull run, ETH pourrait brûler 2–5 millions d'unités par an.</p>
+        </div>
+      </li>
+      <li>
+        <div class="cat-icon">🌐</div>
+        <div class="cat-body">
+          <span class="cat-title">Tokenisation des actifs réels (RWA)</span>
+          <p class="cat-desc">BlackRock, JPMorgan, Goldman Sachs et des dizaines d'institutions migrent des actifs réels (fonds monétaires, obligations, immobilier) sur Ethereum. Ce marché estimé à 16 000 milliards de dollars à long terme fait d'ETH le socle indispensable de la finance tokenisée mondiale.</p>
+        </div>
+      </li>
+      <li>
+        <div class="cat-icon">⚡</div>
+        <div class="cat-body">
+          <span class="cat-title">Scalabilité L2 — Explosion de l'adoption</span>
+          <p class="cat-desc">Les Layer 2 (Arbitrum, Base, Optimism, zkSync, Starknet) réduisent les frais à &lt;0.01$ tout en sécurisant via Ethereum. Base dépasse déjà 2M d'utilisateurs actifs mensuels. Cette scalabilité décuple l'espace d'adressable d'ETH sans compromettre la sécurité du L1.</p>
+        </div>
+      </li>
+      <li>
+        <div class="cat-icon">📊</div>
+        <div class="cat-body">
+          <span class="cat-title">Rendement de staking — ETH actif productif</span>
+          <p class="cat-desc">Avec 4–6 % de rendement annuel en ETH, les investisseurs institutionnels disposent d'un argument qui n'existait pas pour Bitcoin : un flux de trésorerie. Cela transforme ETH en "obligations crypto" et attire des allocations dans les portefeuilles diversifiés.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-symbol">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <polygon points="10,2 18,7 18,13 10,18 2,13 2,7" stroke="var(--eth)" stroke-width="1" fill="none"/>
+          <polygon points="10,5 15,8 15,12 10,15 5,12 5,8" fill="var(--eth)" opacity="0.2"/>
+        </svg>
+      </div>
+      <div class="divider-line"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SECTION 5 : MÉTRIQUES ═══ -->
+<section id="metrics">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Métriques on-chain</span>
+    </div>
+
+    <h2>Les données <em>on-chain</em> parlent</h2>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Indicateur</th>
+          <th>Valeur actuelle</th>
+          <th>Signal</th>
+          <th>Tendance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ETH stakés</td>
+          <td class="num">32 800 000</td>
+          <td class="neu">Haussier</td>
+          <td class="pos num">↑ +18%</td>
+        </tr>
+        <tr>
+          <td>TVL DeFi Ethereum</td>
+          <td class="num">$54 Md</td>
+          <td class="pos">Fort</td>
+          <td class="pos num">↑ +34%</td>
+        </tr>
+        <tr>
+          <td>Adresses actives / jour</td>
+          <td class="num">460 000</td>
+          <td class="neu">Neutre</td>
+          <td class="pos num">↑ +8%</td>
+        </tr>
+        <tr>
+          <td>ETH brûlés (depuis Merge)</td>
+          <td class="num">4 400 000 ETH</td>
+          <td class="pos">Déflationniste</td>
+          <td class="pos num">↑ Continu</td>
+        </tr>
+        <tr>
+          <td>NVT Ratio</td>
+          <td class="num">65</td>
+          <td class="pos">Sous-évalué</td>
+          <td class="pos num">↓ Faible</td>
+        </tr>
+        <tr>
+          <td>MVRV Z-Score</td>
+          <td class="num">1.2</td>
+          <td class="pos">Zone d'achat</td>
+          <td class="neu num">→ Neutre</td>
+        </tr>
+        <tr>
+          <td>Exchange Netflow (30j)</td>
+          <td class="num">-280 000 ETH</td>
+          <td class="pos">Sortie nette</td>
+          <td class="pos num">↑ Haussier</td>
+        </tr>
+        <tr>
+          <td>Dominance L2 (txs)</td>
+          <td class="num">62%</td>
+          <td class="neu">Scalabilité</td>
+          <td class="pos num">↑ +15%</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</section>
+
+<!-- ═══ SECTION 6 : SCÉNARIOS ═══ -->
+<section id="scenarios">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Projection de prix</span>
+    </div>
+
+    <h2>Trois <em>scénarios</em> pour 2027</h2>
+
+    <p>
+      Basé sur l'analyse on-chain, les cycles historiques et les fondamentaux macroéconomiques, nous présentons trois scénarios distincts pour le sommet du cycle 2025–2027. Ces projections ne constituent pas des conseils financiers.
+    </p>
+
+    <div class="scenarios">
+      <div class="scenario-card bull">
+        <span class="sc-type">🚀 Scénario haussier</span>
+        <span class="sc-price">$15 000</span>
+        <span class="sc-range">Fourchette : $12 000 – $18 000</span>
+        <p class="sc-desc">Adoption institutionnelle massive via ETF, tokenisation RWA atteignant 300 Md$ sur ETH, réduction des taux Fed accélérant les flux vers les actifs à risque.</p>
+        <div class="sc-proba">
+          <div class="sc-bar-wrap"><div class="sc-bar" data-width="30"></div></div>
+          <span class="sc-pct">30%</span>
+        </div>
+      </div>
+
+      <div class="scenario-card base">
+        <span class="sc-type">📊 Scénario de base</span>
+        <span class="sc-price">$8 500</span>
+        <span class="sc-range">Fourchette : $6 000 – $11 000</span>
+        <p class="sc-desc">Adoption progressive des ETF, croissance organique des L2, environnement macro stable. Extension du cycle 2021 multipliée par les nouvelles dynamiques structurelles.</p>
+        <div class="sc-proba">
+          <div class="sc-bar-wrap"><div class="sc-bar" data-width="50"></div></div>
+          <span class="sc-pct">50%</span>
+        </div>
+      </div>
+
+      <div class="scenario-card bear">
+        <span class="sc-type">⚠️ Scénario baissier</span>
+        <span class="sc-price">$3 800</span>
+        <span class="sc-range">Fourchette : $2 800 – $5 000</span>
+        <p class="sc-desc">Choc réglementaire majeur, récession mondiale, hack critique d'un protocole majeur, ou perte de confiance institutionnelle suite à un événement systémique.</p>
+        <div class="sc-proba">
+          <div class="sc-bar-wrap"><div class="sc-bar" data-width="20"></div></div>
+          <span class="sc-pct">20%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SECTION 7 : RISQUES ═══ -->
+<section id="risques">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">07</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Gestion du risque</span>
+    </div>
+
+    <h2>Risques <em>à surveiller</em></h2>
+
+    <p>
+      Toute thèse d'investissement robuste requiert une analyse honnête des risques. Le bull case Ethereum n'est pas exempt de menaces réelles, certaines potentiellement invalidantes.
+    </p>
+
+    <div class="risk-grid">
+      <div class="risk-card">
+        <h4>Risque réglementaire <span class="badge high">Élevé</span></h4>
+        <p>Classification d'ETH en valeur mobilière par la SEC. Restrictions sur le staking pour les ETF. Législation anti-DeFi dans les pays du G7.</p>
+      </div>
+      <div class="risk-card">
+        <h4>Concurrence L1 <span class="badge med">Moyen</span></h4>
+        <p>Solana, Aptos, Sui capturent des parts de marché DeFi. Si un concurrent dépasse ETH sur les métriques d'activité développeur, la dominance structurelle s'érode.</p>
+      </div>
+      <div class="risk-card">
+        <h4>Vulnérabilité technique <span class="badge high">Élevé</span></h4>
+        <p>Exploit du protocole de consensus, bug critique dans un rollup majeur, ou découverte d'une faille dans les contrats de staking lié à un protocole Lido/Rocket Pool.</p>
+      </div>
+      <div class="risk-card">
+        <h4>Macro choc global <span class="badge med">Moyen</span></h4>
+        <p>Récession aux États-Unis, crise bancaire majeure ou conflit géopolitique étendu pourraient déclencher un risk-off général, ETH chutant de 60–70% comme en 2022.</p>
+      </div>
+      <div class="risk-card">
+        <h4>Fragmentation L2 <span class="badge med">Moyen</span></h4>
+        <p>L'explosion des Layer 2 pourrait fragmenter la liquidité et la TVL, diluant les flux vers ETH L1. Si les L2 capturent trop de valeur sans reverser au L1, le modèle économique d'ETH s'affaiblit.</p>
+      </div>
+      <div class="risk-card">
+        <h4>Désillusion DeFi <span class="badge low">Faible</span></h4>
+        <p>Effondrement d'un protocole DeFi systémique (type FTX mais on-chain), entraînant une contraction massive de la TVL et une perte de confiance dans l'écosystème Ethereum.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ SECTION 8 : CONCLUSION ═══ -->
+<section id="conclusion">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-number">08</span>
+      <div class="section-line"></div>
+      <span class="section-tag">Synthèse</span>
+    </div>
+
+    <h2><em>Conviction</em> et prudence</h2>
+
+    <p>
+      Ethereum entre dans la période 2025–2027 avec une configuration fondamentale sans précédent dans son histoire. La convergence des ETF institutionnels, de la déflation monétaire structurelle, de l'explosion des L2 et de la tokenisation des actifs réels crée un environnement radicalement différent du cycle 2020–2021.
+    </p>
+
+    <p>
+      Le scénario de base table sur un sommet de cycle entre <strong>$8 000 et $11 000</strong> à horizon fin 2026, avec un risque de dépassement si les conditions macro s'alignent favorablement. La probabilité d'atteindre des nouveaux all-time-highs au-dessus de $5 000 dans les 18 prochains mois est estimée à <strong>70 %+</strong> selon les modèles cycliques.
+    </p>
+
+    <p>
+      La prudence reste de mise : les marchés crypto demeurent volatils, les risques réglementaires persistants et les corrections de 40–60 % restent normales dans un bull cycle. Une <strong>allocation réfléchie, une gestion rigoureuse du risque</strong> et une vision long terme constituent les piliers d'un investissement Ethereum réussi.
+    </p>
+
+    <div class="quote-block">
+      <p class="quote-text">Le prochain sommet ne ressemblera pas à 2021. Il sera plus lent, plus profond, et beaucoup plus institutionnel. C'est une bonne nouvelle.</p>
+      <p class="quote-author">Analyse HARK — Analyse de cycle 2025–2027</p>
+    </div>
+
+    <div class="stat-grid" style="margin-top:48px;">
+      <div class="stat-cell">
+        <span class="stat-val green">70%+</span>
+        <span class="stat-label">Proba ATH &gt; $5K</span>
+        <p class="stat-sub">18 prochains mois</p>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-val gold">$8 500</span>
+        <span class="stat-label">Cible scénario base</span>
+        <p class="stat-sub">Fin 2026</p>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-val eth">4–6%</span>
+        <span class="stat-label">Rendement staking</span>
+        <p class="stat-sub">Rendement annuel en ETH</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-logo">H<span>ARK</span></div>
+  <p class="footer-disclaimer">
+    Cet article est fourni à titre éducatif et informatif uniquement. Il ne constitue pas un conseil financier, une recommandation d'investissement ou une sollicitation à acheter ou vendre tout actif financier. Les projections de prix sont des estimations basées sur des modèles analytiques et ne garantissent aucun résultat futur. Investir dans les cryptomonnaies implique un risque de perte en capital pouvant être total.
+  </p>
+  <div class="footer-bottom">© 2026 HARK · hark-delta.vercel.app · Analyse Ethereum 2025–2027</div>
+</footer>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+// ─── PARALLAX + MOUSE TILT ───
+document.addEventListener('mousemove', (e) => {
+  const mx = (e.clientX / window.innerWidth - 0.5) * 2;
+  const my = (e.clientY / window.innerHeight - 0.5) * 2;
+
+  // Diamond layers parallax
+  const d1 = document.querySelector('.hero-diamond');
+  const d2 = document.querySelector('.hero-diamond-2');
+  const d3 = document.querySelector('.hero-diamond-3');
+  if (d1) d1.style.transform = `rotate(${Date.now()/500 % 360}deg) translate(${mx*12}px, ${my*8}px)`;
+  if (d2) d2.style.transform = `rotate(${-(Date.now()/300) % 360}deg) translate(${mx*-18}px, ${my*-12}px)`;
+  if (d3) d3.style.transform = `rotate(${Date.now()/200 % 360}deg) translate(${mx*25}px, ${my*18}px)`;
+
+  // Hero content subtle tilt
+  const content = document.querySelector('.hero-content');
+  if (content) {
+    content.style.transform = `rotateY(${mx * 4}deg) rotateX(${-my * 3}deg)`;
+  }
+
+  // Orbs follow
+  const orb1 = document.querySelector('.hero-orb-1');
+  const orb2 = document.querySelector('.hero-orb-2');
+  if (orb1) orb1.style.transform = `translate(${mx*30}px, ${my*20}px) scale(1)`;
+  if (orb2) orb2.style.transform = `translate(${mx*-20}px, ${my*-15}px) scale(1)`;
+});
+
+// ─── CARD TILT on 3D cards ───
+document.querySelectorAll('.hero-meta-card, .scenario-card, .tl-card, .risk-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    card.style.transform = `translateY(-8px) rotateX(${-dy * 8}deg) rotateY(${dx * 8}deg) scale(1.02)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+
+// ─── SCROLL PARALLAX ───
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const grid = document.querySelector('.hero-grid');
+  if (grid) grid.style.transform = `rotateX(55deg) translateY(calc(30% + ${scrollY * 0.15}px)) scale(1.4)`;
+  const bg = document.querySelector('.hero-bg');
+  if (bg) bg.style.transform = `translateY(${scrollY * 0.3}px)`;
+  const diamondWrap = document.querySelector('.hero-diamond-wrap');
+  if (diamondWrap) diamondWrap.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.2}px))`;
+});
+
+</script>
+<script>
+// ─── PROGRESS BAR ───
+const progressBar = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.width = (scrollTop / docHeight * 100) + '%';
+});
+
+// ─── NAV SCROLL ───
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ─── INTERSECTION OBSERVER ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Animate scenario bars
+      if (entry.target.classList.contains('scenario-card')) {
+        const bar = entry.target.querySelector('.sc-bar');
+        if (bar) {
+          setTimeout(() => {
+            bar.style.width = bar.getAttribute('data-width') + '%';
+          }, 300);
+        }
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.stat-cell, .tl-item, .scenario-card, .catalyst-list li').forEach(el => {
+  observer.observe(el);
+});
+
+// ─── CHART ───
+const ctx = document.getElementById('priceChart').getContext('2d');
+
+const labels = [
+  'Jan 20','Jul 20','Jan 21','Jul 21','Jan 22','Jul 22',
+  'Jan 23','Jul 23','Jan 24','Jul 24','Jan 25',
+  'Jul 25','Jan 26','Jul 26','Jan 27'
+];
+
+const prices = [
+  130, 240, 1100, 2500, 3400, 1050,
+  1200, 1900, 2300, 3100, 2400,
+  null, null, null, null
+];
+
+const projections = [
+  null, null, null, null, null, null,
+  null, null, null, null, 2400,
+  5500, 8500, 10000, 7000
+];
+
+const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, 'rgba(98,126,234,0.4)');
+gradient.addColorStop(1, 'rgba(98,126,234,0)');
+
+const projGradient = ctx.createLinearGradient(0, 0, 0, 300);
+projGradient.addColorStop(0, 'rgba(232,201,122,0.2)');
+projGradient.addColorStop(1, 'rgba(232,201,122,0)');
+
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Prix ETH',
+        data: prices,
+        borderColor: '#627EEA',
+        borderWidth: 2,
+        fill: true,
+        backgroundColor: gradient,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#627EEA',
+      },
+      {
+        label: 'Projection',
+        data: projections,
+        borderColor: '#e8c97a',
+        borderWidth: 2,
+        borderDash: [6, 4],
+        fill: true,
+        backgroundColor: projGradient,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#e8c97a',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#111620',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        titleColor: '#6b7590',
+        bodyColor: '#d8dde8',
+        titleFont: { family: 'JetBrains Mono', size: 10 },
+        bodyFont: { family: 'JetBrains Mono', size: 12 },
+        callbacks: {
+          label: (ctx) => ctx.raw ? ' $' + ctx.raw.toLocaleString() : ' —'
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+        ticks: { color: '#3a4155', font: { family: 'JetBrains Mono', size: 10 }, maxRotation: 0 }
+      },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+        ticks: {
+          color: '#3a4155',
+          font: { family: 'JetBrains Mono', size: 10 },
+          callback: (v) => '$' + (v >= 1000 ? Math.round(v/1000) + 'K' : v)
+        }
+      }
+    }
+  }
+});
+
+// ─── STAGGERED DELAYS FOR STAT CELLS ───
+document.querySelectorAll('.stat-cell').forEach((cell, i) => {
+  cell.style.transitionDelay = (i * 0.1) + 's';
+});
+</script>
+</body>
+</html>
