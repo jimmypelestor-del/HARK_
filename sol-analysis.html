@@ -203,11 +203,10 @@ input[type=file]{display:none}
 
     <!-- ETF FLOWS -->
     <div class="card">
-      <div class="card-head"><span class="card-title">🏦 ETF Solana · Flux</span><span class="card-badge" id="etf-badge" style="color:var(--teal)">⏳</span></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total net</span><span class="ind-val" id="e-tot">—</span></div><div class="ind-ex">Flux nets entrant/sortant des ETF spot US. Positif = institutions achètent.</div></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total net</span><span class="ind-val" id="e-tot">—</span></div><div class="ind-ex">Capitalisation totale SOL.</div></div>
       <div class="ind-row"><div class="ind-main"><span class="ind-lbl">IBIT · BlackRock</span><span class="ind-val" id="e-ibit">—</span></div><div class="ind-ex">Le plus gros ETF BTC. Signal institutionnel fort.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">FBTC · Fidelity</span><span class="ind-val" id="e-fbtc">—</span></div><div class="ind-ex">2ème ETF en termes d'actifs sous gestion.</div></div>
-      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">GBTC · Grayscale</span><span class="ind-val" id="e-gbtc">—</span></div><div class="ind-ex">Historiquement en sortie de capitaux depuis conversion en ETF.</div></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">FBTC · Fidelity</span><span class="ind-val" id="e-fbtc">—</span></div><div class="ind-ex">Distance par rapport à l'ATH historique SOL.</div></div>
+      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">GBTC · Grayscale</span><span class="ind-val" id="e-gbtc">—</span></div><div class="ind-ex">Solana n'a pas encore d'ETF spot aux USA.</div></div>
     </div>
   </div>
 
@@ -236,11 +235,11 @@ input[type=file]{display:none}
 
   <!-- ROW 4 : Scénarios HarK -->
   <div class="card">
-    <div class="card-head"><span class="card-title">📚 Scénarios HarK · BTC</span><span class="card-badge" style="color:var(--gold)">Éditable</span></div>
-    <div id="scenarios-wrap">
-      <div class="sc"><div class="sc-hd"><span class="b-bull">BULLISH</span><span style="font-size:.87rem;font-weight:700">Breakout de range vers les ATH</span></div><div class="sc-txt">BTC casse 72k avec volume → cible 76-78k puis potentiellement ATH. Structure haussière intacte au-dessus de 68k.</div><div class="sc-lvls"><span class="lt" style="color:var(--green)">Entrée: 72,000$</span><span class="lt" style="color:var(--red)">SL: 68,500$</span><span class="lt" style="color:var(--green)">TP1: 76,000$</span><span class="lt" style="color:var(--green)">TP2: 79,500$</span><span class="lt" style="color:var(--gold)">R:R ≈ 2</span></div></div>
-      <div class="sc"><div class="sc-hd"><span class="b-bear">BEARISH</span><span style="font-size:.87rem;font-weight:700">Rechute vers zone de demande</span></div><div class="sc-txt">BTC perd 68k sur clôture journalière → retour probable 63-65k. Zone de liquidité majeure. Invalidation si retour rapide >69k.</div><div class="sc-lvls"><span class="lt" style="color:var(--red)">Short: 67,800$</span><span class="lt" style="color:var(--red)">SL: 69,200$</span><span class="lt" style="color:var(--green)">TP: 64,000$</span><span class="lt" style="color:var(--gold)">R:R ≈ 2.7</span></div></div>
-      <div class="sc" style="border:none"><div class="sc-hd"><span class="b-neut">NEUTRE</span><span style="font-size:.87rem;font-weight:700">Range 68k-72k — Attente</span></div><div class="sc-txt">Pas de position directionnelle avant breakout confirmé. Scalp sur bornes du range. Volume = clé.</div><div class="sc-lvls"><span class="lt">Range bas: 68k</span><span class="lt">Range haut: 72k</span><span class="lt" style="color:var(--dim)">Attente</span></div></div>
+      <div class="card-head"><span class="card-title">🏦 ETF Solana · Flux (US$M)</span><span class="card-badge" id="etf-badge" style="color:var(--teal)">⏳</span></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total net</span><span class="ind-val" id="e-tot">—</span></div><div class="ind-ex">Flux nets totaux ETF SOL spot. Marché encore jeune — forte croissance attendue.</div></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Top ETF #1</span><span class="ind-val" id="e-ibit">—</span></div><div class="ind-ex">Premier ETF SOL par volume de flux.</div></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Top ETF #2</span><span class="ind-val" id="e-fbtc">—</span></div><div class="ind-ex">Deuxième ETF SOL par volume de flux.</div></div>
+      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">Date</span><span class="ind-val" id="e-gbtc" style="color:rgba(255,255,255,.5)">—</span></div><div class="ind-ex">Dernière mise à jour des données Farside.</div></div>
     </div>
   </div>
 
@@ -253,7 +252,7 @@ async function loadData(){
     const [pr, fgr, dr] = await Promise.all([
       fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true&include_market_cap=true'),
       fetch('https://api.alternative.me/fng/?limit=1'),
-      fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=solusdt'),
+      fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=SOLUSDT'),
     ]);
     const p = (await pr.json()).solana;
     const up = p.usd_24h_change >= 0;
@@ -275,7 +274,7 @@ async function loadData(){
 
   // L/S Binance
   try {
-    const ls = await (await fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=solusdt&period=5m&limit=1')).json();
+    const ls = await (await fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=SOLUSDT&period=5m&limit=1')).json();
     const lp=parseFloat(ls[0]?.longAccount)*100; const sp=100-lp;
     const le=document.getElementById('d-ls'); le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S'; le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
     document.getElementById('d-lsb').style.width=lp+'%';
@@ -285,7 +284,7 @@ async function loadData(){
 // Liquidations BTC
 async function loadLiq(){
   try {
-    const r=await fetch('/api/liquidations',{signal:AbortSignal.timeout(30000)});
+    const r=await fetch('/api/liquidations-sol',{signal:AbortSignal.timeout(30000)});
     const d=await r.json(); if(d.error) throw new Error(d.error);
     document.getElementById('l-tot').textContent=d.total||'—';
     document.getElementById('l-lng').textContent=d.long||'—';
@@ -295,6 +294,7 @@ async function loadLiq(){
 }
 
 // ETF
+// SOL ETF Farside
 async function loadETF(){
   try {
     const r=await fetch('/api/etf-sol',{signal:AbortSignal.timeout(20000)});
@@ -302,109 +302,15 @@ async function loadETF(){
     const fmt=v=>{const n=parseFloat(v);if(isNaN(n)||v==='—')return'—';return(n>=0?'+':'')+n.toFixed(1)+'M'};
     const col=v=>parseFloat(v)>=0?'#00e676':'#ff4d4d';
     const set=(id,v)=>{const e=document.getElementById(id);e.textContent=fmt(v);e.style.color=col(v)};
-    set('e-tot',d.total); set('e-ibit',d.ibit); set('e-fbtc',d.fbtc); set('e-gbtc',d.gbtc);
-    document.getElementById('etf-badge').textContent='Farside · Live'; document.getElementById('etf-badge').style.color=parseFloat(d.total)>=0?'#00e676':'#ff4d4d';
+    set('e-tot',d.total);
+    const t1=d.topFlows?.[0]; if(t1){document.getElementById('e-ibit').textContent=(t1.val>=0?'+':'')+t1.val.toFixed(1)+'M — '+t1.name; document.getElementById('e-ibit').style.color=t1.val>=0?'#00e676':'#ff4d4d';}
+    const t2=d.topFlows?.[1]; if(t2){document.getElementById('e-fbtc').textContent=(t2.val>=0?'+':'')+t2.val.toFixed(1)+'M — '+t2.name; document.getElementById('e-fbtc').style.color=t2.val>=0?'#00e676':'#ff4d4d';}
+    document.getElementById('e-gbtc').textContent=d.date||'—';
+    document.getElementById('etf-badge').textContent='Farside · '+d.date;
+    document.getElementById('etf-badge').style.color=parseFloat(d.total)>=0?'#00e676':'#ff4d4d';
   } catch{ document.getElementById('etf-badge').textContent='⚠️ Erreur'; document.getElementById('etf-badge').style.color='#ff4d4d'; }
 }
 
-// S/R Pivot Points
-function computeSR(price){
-  const H=price*1.02,L=price*0.98,C=price;
-  const PP=(H+L+C)/3, R1=2*PP-L, R2=PP+(H-L), R3=H+2*(PP-L), S1=2*PP-H, S2=PP-(H-L), S3=L-2*(H-PP);
-  const fmt=n=>'$'+Math.round(n).toLocaleString('fr-FR');
-  const pct=n=>((n-price)/price*100);
-  const sr=(lbl,val,col,icon,ex)=>`<div class="sr-row"><div class="sr-main"><span style="font-size:.78rem;font-weight:700;color:${col}">${icon} ${lbl}</span><div style="text-align:right"><span style="font-weight:900;color:${col};font-size:.9rem">${fmt(val)}</span><span style="font-size:.68rem;color:rgba(255,255,255,.3);margin-left:.4rem">${pct(val)>=0?'+':''}${pct(val).toFixed(1)}%</span></div></div><div class="sr-ex">${ex}</div></div>`;
-  document.getElementById('srWrap').innerHTML=
-    sr('R3',R3,'#ff4d4d','⬆','Résistance extrême — zone de retournement majeur, peu probable à court terme')+
-    sr('R2',R2,'#ff7b7b','⬆','Résistance forte — attention si le prix approche, souvent rejet')+
-    sr('R1',R1,'#ffaa7b','⬆','Première résistance — zone de prise de profit pour les longs')+
-    `<div style="border-top:1px solid rgba(245,166,35,.2);border-bottom:1px solid rgba(245,166,35,.2);background:rgba(245,166,35,.05)"><div class="sr-main" style="padding:.5rem 1.25rem .25rem"><span style="font-size:.78rem;font-weight:700;color:#f5a623">◆ PIVOT</span><span style="font-weight:900;color:#f5a623;font-size:.92rem">${fmt(PP)}</span></div><div class="sr-ex">Point pivot — neutre. Au-dessus = bullish, en dessous = bearish.</div></div>`+
-    sr('S1',S1,'#7bffaa','⬇','Premier support — zone d\'achat pour rebond court terme')+
-    sr('S2',S2,'#00e676','⬇','Support fort — zone de rebond majeur, surveiller les réactions')+
-    sr('S3',S3,'#00b853','⬇','Support extrême — si cassé, signal très baissier');
-  document.getElementById('sr-badge').textContent='Prix actuel · Live';
-}
-
-// ── GRAPHIQUES ──
-function setupImg(zoneId,imgId,inputId,badgeId,key){
-  const input=document.getElementById(inputId);
-  const zone=document.getElementById(zoneId);
-  input.addEventListener('change',e=>{
-    const f=e.target.files[0]; if(!f) return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-      document.getElementById(imgId).src=ev.target.result;
-      zone.classList.add('has-img');
-      document.getElementById(badgeId).textContent='✅ '+f.name.slice(0,18);
-      document.getElementById(badgeId).style.color='#00e676';
-      try{localStorage.setItem(key,ev.target.result)}catch{}
-    };
-    reader.readAsDataURL(f);
-  });
-  zone.addEventListener('dragover',e=>{e.preventDefault();zone.style.borderColor='#9945e8'});
-  zone.addEventListener('dragleave',()=>zone.style.borderColor='');
-  zone.addEventListener('drop',e=>{e.preventDefault();zone.style.borderColor='';const f=e.dataTransfer.files[0];if(f?.type.startsWith('image/')){input.files=e.dataTransfer.files;input.dispatchEvent(new Event('change'))}});
-  try{const s=localStorage.getItem(key);if(s){document.getElementById(imgId).src=s;zone.classList.add('has-img');document.getElementById(badgeId).textContent='✅ Sauvegardé';document.getElementById(badgeId).style.color='#00e676'}}catch{}
-}
-
-function clearImg(zoneId,imgId,badgeId,key){
-  document.getElementById(imgId).src='';
-  document.getElementById(zoneId).classList.remove('has-img');
-  document.getElementById(badgeId).textContent='Ajouter'; document.getElementById(badgeId).style.color='rgba(255,255,255,.35)';
-  try{localStorage.removeItem(key)}catch{}
-}
-
-async function pasteImg(zoneId,imgId,badgeId,key){
-  try{
-    const items=await navigator.clipboard.read();
-    for(const item of items)for(const type of item.types)if(type.startsWith('image/')){
-      const blob=await item.getType(type);
-      const r=new FileReader(); r.onload=ev=>{document.getElementById(imgId).src=ev.target.result;document.getElementById(zoneId).classList.add('has-img');document.getElementById(badgeId).textContent='✅ Collé';document.getElementById(badgeId).style.color='#00e676';try{localStorage.setItem(key,ev.target.result)}catch{}};
-      r.readAsDataURL(blob); return;
-    }
-  } catch{alert('Copie ton graphique TradingView avec Ctrl+C puis réessaie.');}
-}
-
-// ── SCÉNARIO + SAVE ──
-let sc=localStorage.getItem('sol_sc')||'neut';
-function setSc(t){sc=t;localStorage.setItem('sol_sc',t);['bull','bear','neut'].forEach(x=>document.getElementById('sb-'+x).style.opacity=x===t?'1':'.35')}
-setSc(sc);
-
-function saveAll(){
-  const data={analyse:document.getElementById('ta-main').value,sc,en:document.getElementById('l-en').value,sl:document.getElementById('l-sl').value,t1:document.getElementById('l-t1').value,t2:document.getElementById('l-t2').value,at:new Date().toLocaleString('fr-FR')};
-  localStorage.setItem('sol_data',JSON.stringify(data));
-  const st=document.getElementById('sv-st'); st.textContent='✅ '+data.at; st.style.color='#00e676';
-}
-function restore(){
-  try{const d=JSON.parse(localStorage.getItem('sol_data'));if(!d)return;
-    document.getElementById('ta-main').value=d.analyse||'';
-    document.getElementById('l-en').value=d.en||''; document.getElementById('l-sl').value=d.sl||'';
-    document.getElementById('l-t1').value=d.t1||''; document.getElementById('l-t2').value=d.t2||'';
-    if(d.sc)setSc(d.sc);
-    if(d.at)document.getElementById('sv-st').textContent='Dernière save : '+d.at;
-  }catch{}
-}
-
-// R:R
-function computeRR(){
-  const en=parseFloat(document.getElementById('l-en').value?.replace(/[^0-9.]/g,''));
-  const sl=parseFloat(document.getElementById('l-sl').value?.replace(/[^0-9.]/g,''));
-  const t1=parseFloat(document.getElementById('l-t1').value?.replace(/[^0-9.]/g,''));
-  if(!en||!sl||!t1){document.getElementById('rr-box').innerHTML='Remplir Entrée + SL + TP1 pour voir le R:R';document.getElementById('rr-badge').textContent='En attente';return}
-  const risk=Math.abs(en-sl),reward=Math.abs(t1-en),rr=(reward/risk).toFixed(2);
-  const isLong=t1>en;
-  const col=rr>=2?'#00e676':rr>=1?'#f5a623':'#ff4d4d';
-  document.getElementById('rr-box').innerHTML=`<span style="color:${col};font-weight:800">R:R = 1:${rr}</span> · Risque: $${Math.round(risk).toLocaleString()} · Gain: $${Math.round(reward).toLocaleString()} · ${isLong?'<span style="color:#00e676">LONG ▲</span>':'<span style="color:#ff4d4d">SHORT ▼</span>'}`;
-  document.getElementById('rr-badge').textContent='R:R = 1:'+rr; document.getElementById('rr-badge').style.color=col;
-}
-['l-en','l-sl','l-t1','l-t2'].forEach(id=>document.getElementById(id).addEventListener('input',computeRR));
-setInterval(saveAll,30000);
-
-// Init
-setupImg('cz1','ci1-img','ci1','cb1','c1');
-setupImg('cz2','ci2-img','ci2','cb2','c2');
-restore(); computeRR();
-loadData();
 loadLiq();
 loadETF();
 </script>

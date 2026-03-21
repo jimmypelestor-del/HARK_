@@ -203,11 +203,11 @@ input[type=file]{display:none}
 
     <!-- ETF FLOWS -->
     <div class="card">
-      <div class="card-head"><span class="card-title">🏦 ETF Ethereum · Flux</span><span class="card-badge" id="etf-badge" style="color:var(--teal)">⏳</span></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total net</span><span class="ind-val" id="e-tot">—</span></div><div class="ind-ex">Flux nets entrant/sortant des ETF spot US. Positif = institutions achètent.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">IBIT · BlackRock</span><span class="ind-val" id="e-ibit">—</span></div><div class="ind-ex">Le plus gros ETF BTC. Signal institutionnel fort.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">FBTC · Fidelity</span><span class="ind-val" id="e-fbtc">—</span></div><div class="ind-ex">2ème ETF en termes d'actifs sous gestion.</div></div>
-      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">GBTC · Grayscale</span><span class="ind-val" id="e-gbtc">—</span></div><div class="ind-ex">Historiquement en sortie de capitaux depuis conversion en ETF.</div></div>
+      <div class="card-head"><span class="card-title">🏦 ETF Ethereum · Flux (US$M)</span><span class="card-badge" id="etf-badge" style="color:var(--teal)">⏳</span></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total net</span><span class="ind-val" id="e-tot">—</span></div><div class="ind-ex">Flux nets totaux ETF ETH spot US. Positif = institutions accumulent.</div></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">ETHA · BlackRock</span><span class="ind-val" id="e-ibit">—</span></div><div class="ind-ex">Principal ETF ETH institutionnel. Signal fort d'adoption.</div></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">FETH · Fidelity</span><span class="ind-val" id="e-fbtc">—</span></div><div class="ind-ex">2ème ETF ETH en AUM. Flux importants depuis lancement.</div></div>
+      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">ETHE · Grayscale</span><span class="ind-val" id="e-gbtc">—</span></div><div class="ind-ex">Fonds historique converti en ETF. Souvent en sortie de flux.</div></div>
     </div>
   </div>
 
@@ -253,7 +253,7 @@ async function loadData(){
     const [pr, fgr, dr] = await Promise.all([
       fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true&include_market_cap=true'),
       fetch('https://api.alternative.me/fng/?limit=1'),
-      fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=ethusdt'),
+      fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=ETHUSDT'),
     ]);
     const p = (await pr.json()).ethereum;
     const up = p.usd_24h_change >= 0;
@@ -275,7 +275,7 @@ async function loadData(){
 
   // L/S Binance
   try {
-    const ls = await (await fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=ethusdt&period=5m&limit=1')).json();
+    const ls = await (await fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=ETHUSDT&period=5m&limit=1')).json();
     const lp=parseFloat(ls[0]?.longAccount)*100; const sp=100-lp;
     const le=document.getElementById('d-ls'); le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S'; le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
     document.getElementById('d-lsb').style.width=lp+'%';
@@ -285,7 +285,7 @@ async function loadData(){
 // Liquidations BTC
 async function loadLiq(){
   try {
-    const r=await fetch('/api/liquidations',{signal:AbortSignal.timeout(30000)});
+    const r=await fetch('/api/liquidations-eth',{signal:AbortSignal.timeout(30000)});
     const d=await r.json(); if(d.error) throw new Error(d.error);
     document.getElementById('l-tot').textContent=d.total||'—';
     document.getElementById('l-lng').textContent=d.long||'—';
@@ -294,7 +294,7 @@ async function loadLiq(){
   } catch{ document.getElementById('liq-badge').textContent='⚠️ Erreur'; document.getElementById('liq-badge').style.color='#ff4d4d'; }
 }
 
-// ETF
+// ETH ETF Farside
 async function loadETF(){
   try {
     const r=await fetch('/api/etf-eth',{signal:AbortSignal.timeout(20000)});
@@ -302,8 +302,9 @@ async function loadETF(){
     const fmt=v=>{const n=parseFloat(v);if(isNaN(n)||v==='—')return'—';return(n>=0?'+':'')+n.toFixed(1)+'M'};
     const col=v=>parseFloat(v)>=0?'#00e676':'#ff4d4d';
     const set=(id,v)=>{const e=document.getElementById(id);e.textContent=fmt(v);e.style.color=col(v)};
-    set('e-tot',d.total); set('e-ibit',d.ibit); set('e-fbtc',d.fbtc); set('e-gbtc',d.gbtc);
-    document.getElementById('etf-badge').textContent='Farside · Live'; document.getElementById('etf-badge').style.color=parseFloat(d.total)>=0?'#00e676':'#ff4d4d';
+    set('e-tot',d.total); set('e-ibit',d.etha); set('e-fbtc',d.feth); set('e-gbtc',d.ethe);
+    document.getElementById('etf-badge').textContent='Farside · '+d.date;
+    document.getElementById('etf-badge').style.color=parseFloat(d.total)>=0?'#00e676':'#ff4d4d';
   } catch{ document.getElementById('etf-badge').textContent='⚠️ Erreur'; document.getElementById('etf-badge').style.color='#ff4d4d'; }
 }
 
