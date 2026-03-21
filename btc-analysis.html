@@ -324,14 +324,12 @@ input[type=file]{display:none}
 
 </div>
 <script>
-const COIN='bitcoin', SYM_BYBIT='BTCUSDT', SYM_BINANCE='BTCUSDT', ATH=126296, PREFIX='btc';
+const COIN='bitcoin', ATH=126296, PREFIX='bit';
 
 async function loadData(){
+  // Prix CoinGecko
   try{
-    const[pr,dr]=await Promise.all([
-      fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`),
-      fetch(`https://api.bybit.com/v5/market/tickers?category=linear&symbol=${SYM_BYBIT}`)
-    ]);
+    const pr=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`);
     const p=(await pr.json())[COIN];
     const up=p.usd_24h_change>=0;
     document.getElementById('hp').textContent='$'+Math.round(p.usd).toLocaleString('fr-FR');
@@ -339,31 +337,38 @@ async function loadData(){
     document.getElementById('hm').textContent='$'+(p.usd_market_cap/1e12).toFixed(2)+'T';
     const ath=((p.usd/ATH*100)-100).toFixed(1);
     const ae=document.getElementById('ha');ae.textContent=ath+'%';ae.style.color=parseFloat(ath)>=0?'#00e676':'#ff4d4d';
+  }catch(e){console.log('CoinGecko:',e)}
 
-    const d=(await dr.json()).result?.list?.[0];
-    const fr=parseFloat(d?.fundingRate)*100;
-    const frE=document.getElementById('d-fr');
-    frE.textContent=(fr>=0?'+':'')+fr.toFixed(4)+'%';
-    frE.style.color=fr>0.05?'#ff4d4d':fr>0.01?'#f5a623':fr>-0.01?'rgba(255,255,255,.7)':fr>-0.05?'#00d4aa':'#00e676';
-    document.getElementById('d-fr-sub').textContent=(fr>0.05?'⚠️ Haussier extrême — risque retournement':fr>0.01?'Légèrement haussier':fr>-0.01?'Neutre équilibré':fr>-0.05?'Légèrement baissier':'⚠️ Baissier extrême — risque squeeze')+' · Bybit';
-
-    const oi=parseFloat(d?.openInterestValue);
-    if(oi){const e=document.getElementById('d-oi');e.textContent='$'+(oi/1e9).toFixed(2)+'B';}
-    document.getElementById('drv-badge').textContent='Bybit · Binance · Live';
-  }catch(e){console.log(e)}
-
+  // Derivatives via proxy Vercel (évite le blocage CORS Bybit/Binance)
   try{
-    const ls=await(await fetch(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYM_BINANCE}&period=5m&limit=1`)).json();
-    const lp=parseFloat(ls[0]?.longAccount)*100;const sp=100-lp;
-    const le=document.getElementById('d-ls');le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S';
-    le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
-    document.getElementById('d-lsbar').style.width=lp+'%';
-    document.getElementById('d-lsbar').style.background=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
-    const reading=lp>65?`⚠️ ${lp.toFixed(1)}% de longs — marché suracheté, risque de cascade baissière si le prix casse un support`:lp<35?`⚠️ ${sp.toFixed(1)}% de shorts — potentiel short squeeze violent si le prix monte`:lp>55?`${lp.toFixed(1)}% de longs — légère dominance haussière, surveiller les supports`:lp<45?`${sp.toFixed(1)}% de shorts — légère pression baissière, surveiller les résistances`:`Marché équilibré (${lp.toFixed(1)}% L · ${sp.toFixed(1)}% S) — pas de signal extrême`;
-    document.getElementById('drv-reading').textContent='Lecture : '+reading;
-  }catch{}
-}
+    const dr=await(await fetch('/api/derivatives-btc',{signal:AbortSignal.timeout(10000)})).json();
 
+    if(dr.fr !== null){
+      const fr=parseFloat(dr.fr);
+      const frE=document.getElementById('d-fr');
+      frE.textContent=(fr>=0?'+':'')+fr.toFixed(4)+'%';
+      frE.style.color=fr>0.05?'#ff4d4d':fr>0.01?'#f5a623':fr>-0.01?'rgba(255,255,255,.7)':fr>-0.05?'#00d4aa':'#00e676';
+      document.getElementById('d-fr-sub').textContent=(fr>0.05?'⚠️ Haussier extrême — risque retournement':fr>0.01?'Légèrement haussier':fr>-0.01?'Neutre équilibré':fr>-0.05?'Légèrement baissier':'⚠️ Baissier extrême — risque squeeze')+' · Bybit';
+    }
+
+    if(dr.oi){document.getElementById('d-oi').textContent=dr.oi;}
+
+    if(dr.lp !== null){
+      const lp=parseFloat(dr.lp);const sp=parseFloat(dr.sp);
+      const le=document.getElementById('d-ls');le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S';
+      le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
+      document.getElementById('d-lsbar').style.width=lp+'%';
+      document.getElementById('d-lsbar').style.background=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
+      const reading=lp>65?`⚠️ ${lp.toFixed(1)}% de longs — marché suracheté, risque de cascade baissière si le prix casse un support`:lp<35?`⚠️ ${sp.toFixed(1)}% de shorts — potentiel short squeeze violent si le prix monte`:lp>55?`${lp.toFixed(1)}% de longs — légère dominance haussière, surveiller les supports`:lp<45?`${sp.toFixed(1)}% de shorts — légère pression baissière, surveiller les résistances`:`Marché équilibré (${lp.toFixed(1)}% L · ${sp.toFixed(1)}% S) — pas de signal extrême`;
+      document.getElementById('drv-reading').textContent='Lecture : '+reading;
+    }
+
+    document.getElementById('drv-badge').textContent='Bybit · Binance · Live';
+  }catch(e){
+    document.getElementById('drv-badge').textContent='⚠️ Derivatives indisponibles';
+    console.log('Derivatives:',e);
+  }
+}
 async function loadLiq(){
   try{
     const r=await fetch('/api/liquidations',{signal:AbortSignal.timeout(30000)});
