@@ -127,7 +127,7 @@ input[type=file]{display:none}
     <!-- GRAPHIQUE PRINCIPAL -->
     <div class="card btc-top">
       <div class="card-head">
-        <span class="card-title">📈 Graphique · Scénario</span>
+        <span class="card-title">📈 Graphique · ETH</span>
         <span class="card-badge" id="cb1" style="color:var(--dim)">Cliquer pour ajouter</span>
       </div>
       <div class="chart-zone" id="cz1" onclick="document.getElementById('ci1').click()">
@@ -147,7 +147,7 @@ input[type=file]{display:none}
       <!-- MON ANALYSE -->
       <div class="card">
         <div class="card-head">
-          <span class="card-title">✍️ Mon Analyse & Scénario</span>
+          <span class="card-title">✍️ Mon Analyse ETH</span>
           <div style="display:flex;gap:.35rem">
             <button onclick="setSc('bull')" id="sb-bull" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(0,230,118,.2);background:rgba(0,230,118,.06);color:#00e676;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.45">BULL</button>
             <button onclick="setSc('bear')" id="sb-bear" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(255,77,77,.2);background:rgba(255,77,77,.06);color:#ff4d4d;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.45">BEAR</button>
@@ -166,7 +166,7 @@ input[type=file]{display:none}
       <!-- MES NIVEAUX + R:R -->
       <div class="card">
         <div class="card-head">
-          <span class="card-title">🎯 Mes Niveaux · R:R</span>
+          <span class="card-title">🎯 Niveaux ETH · R:R</span>
           <span class="card-badge" id="rr-badge" style="color:var(--dim)">En attente</span>
         </div>
         <div style="padding:.75rem 1.25rem;display:flex;flex-direction:column;gap:.45rem">
@@ -184,7 +184,7 @@ input[type=file]{display:none}
   <div class="grid3">
     <!-- DERIVATIVES -->
     <div class="card">
-      <div class="card-head"><span class="card-title">⚡ Derivatives · BTC</span><span class="card-badge" id="drv-badge" style="color:var(--teal)">⏳</span></div>
+      <div class="card-head"><span class="card-title">⚡ Derivatives · ETH</span><span class="card-badge" id="drv-badge" style="color:var(--teal)">⏳</span></div>
       <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Funding Rate</span><span class="ind-val" id="d-fr">—</span></div><div class="ind-ex">Positif = longs paient les shorts. Négatif = shorts paient. Extrêmes = signal de retournement potentiel.</div></div>
       <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Open Interest</span><span class="ind-val" id="d-oi" style="color:var(--teal)">—</span></div><div class="ind-ex">Capital total engagé. OI + prix montants = tendance forte. OI baissant = désengagement du marché.</div></div>
       <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">Long / Short Ratio</span><span class="ind-val" id="d-ls">—</span></div>
@@ -195,8 +195,8 @@ input[type=file]{display:none}
 
     <!-- LIQUIDATIONS BTC -->
     <div class="card">
-      <div class="card-head"><span class="card-title">💥 Liquidations · BTC</span><span class="card-badge" id="liq-badge" style="color:#d6dbe2">⏳</span></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total BTC liquidé 24h</span><span class="ind-val" id="l-tot" style="color:var(--red)">—</span></div><div class="ind-ex">Montant total forcé en clôture sur BTC. Pic = volatilité extrême passée.</div></div>
+      <div class="card-head"><span class="card-title">💥 Liquidations · ETH</span><span class="card-badge" id="liq-badge" style="color:#d6dbe2">⏳</span></div>
+      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total ETH liquidé 24h</span><span class="ind-val" id="l-tot" style="color:var(--red)">—</span></div><div class="ind-ex">Montant total forcé en clôture sur BTC. Pic = volatilité extrême passée.</div></div>
       <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Longs liquidés</span><span class="ind-val" id="l-lng" style="color:var(--green)">—</span></div><div class="ind-ex">Bulls forcés de vendre → pression baissière à court terme.</div></div>
       <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">Shorts liquidés</span><span class="ind-val" id="l-sht" style="color:var(--red)">—</span></div><div class="ind-ex">Bears forcés de racheter → short squeeze, pression haussière.</div></div>
     </div>
@@ -215,13 +215,13 @@ input[type=file]{display:none}
   <div class="grid2">
     <!-- NIVEAUX S/R -->
     <div class="card">
-      <div class="card-head"><span class="card-title">📐 Niveaux S/R · Pivot Points</span><span class="card-badge" id="sr-badge" style="color:var(--gold)">Live</span></div>
+      <div class="card-head"><span class="card-title">📐 Niveaux S/R · ETH</span><span class="card-badge" id="sr-badge" style="color:var(--gold)">Live</span></div>
       <div id="srWrap"><div style="padding:1rem 1.25rem;color:var(--dim);font-size:.75rem">⏳ Calcul en cours…</div></div>
     </div>
 
     <!-- GRAPHIQUE 2 HTF -->
     <div class="card">
-      <div class="card-head"><span class="card-title">📊 Vue HTF (Hebdo / Mensuel)</span><span class="card-badge" id="cb2" style="color:var(--dim)">Ajouter</span></div>
+      <div class="card-head"><span class="card-title">📊 Vue HTF · ETH</span><span class="card-badge" id="cb2" style="color:var(--dim)">Ajouter</span></div>
       <div class="chart-zone" id="cz2" onclick="document.getElementById('ci2').click()">
         <div class="ph"><div class="ph-icon">📈</div><div class="ph-txt">Vue Higher Time Frame</div><div class="ph-sub">Contexte macro du prix</div></div>
         <img id="ci2-img" src="" alt="">
@@ -236,7 +236,7 @@ input[type=file]{display:none}
 
   <!-- ROW 4 : Scénarios HarK -->
   <div class="card">
-    <div class="card-head"><span class="card-title">📚 Scénarios HarK · BTC</span><span class="card-badge" style="color:var(--gold)">Éditable</span></div>
+    <div class="card-head"><span class="card-title">📚 Scénarios HarK · ETH</span><span class="card-badge" style="color:var(--gold)">Éditable</span></div>
     <div id="scenarios-wrap">
       <div class="sc"><div class="sc-hd"><span class="b-bull">BULLISH</span><span style="font-size:.87rem;font-weight:700">Breakout de range vers les ATH</span></div><div class="sc-txt">BTC casse 2.9k/3.2k avec volume → cible 76-78k puis potentiellement ATH. Structure haussière intacte au-dessus de 2.9k/3.2k.</div><div class="sc-lvls"><span class="lt" style="color:var(--green)">Entrée: 3,200$</span><span class="lt" style="color:var(--red)">SL: 2,900$</span><span class="lt" style="color:var(--green)">TP1: 3,500$</span><span class="lt" style="color:var(--green)">TP2: 3,800$</span><span class="lt" style="color:var(--gold)">R:R ≈ 2</span></div></div>
       <div class="sc"><div class="sc-hd"><span class="b-bear">BEARISH</span><span style="font-size:.87rem;font-weight:700">Rechute vers zone de demande</span></div><div class="sc-txt">BTC perd 2.9k/3.2k sur clôture journalière → retour probable 63-65k. Zone de liquidité majeure. Invalidation si retour rapide >69k.</div><div class="sc-lvls"><span class="lt" style="color:var(--red)">Short: 2,950$</span><span class="lt" style="color:var(--red)">SL: 3,100$</span><span class="lt" style="color:var(--green)">TP: 2,700$</span><span class="lt" style="color:var(--gold)">R:R ≈ 2.7</span></div></div>
