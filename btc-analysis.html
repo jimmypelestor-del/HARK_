@@ -3,97 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HARK — Bitcoin Analysis</title>
+<title>HARK — Bitcoin</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#06080d;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.92);--dim:rgba(255,255,255,.38);--line:rgba(255,255,255,.06);--green:#00e676;--red:#ff4d4d;--gold:#f5a623;--teal:#00d4aa;--accent:#f7931a}
-body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(circle at 15% 0%,rgba(247,147,26,.13),transparent 35%),
-             radial-gradient(circle at 85% 8%,rgba(138,99,255,.07),transparent 30%),
-             linear-gradient(180deg,#040509 0%,#02040a 100%)}
-body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-  background-size:72px 72px;mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,rgba(255,255,255,.7),transparent 78%);
-  -webkit-mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,rgba(255,255,255,.7),transparent 78%)}
-.grain{position:fixed;inset:0;z-index:1;pointer-events:none;
-  background-image:radial-gradient(circle,rgba(255,255,255,.9) 0 1px,transparent 1.5px),radial-gradient(circle,rgba(247,147,26,.55) 0 1.2px,transparent 2px);
-  background-size:150px 150px,260px 260px;background-position:13% 17%,73% 22%;
-  animation:drift 22s ease-in-out infinite alternate}
+:root{--bg:#06080d;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.92);--dim:rgba(255,255,255,.35);--line:rgba(255,255,255,.06);--green:#00e676;--red:#ff4d4d;--gold:#f5a623;--teal:#00d4aa;--accent:#f7931a}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 15% 0%,rgba(247,147,26,.13),transparent 35%),radial-gradient(circle at 85% 8%,rgba(138,99,255,.07),transparent 30%),linear-gradient(180deg,#040509 0%,#02040a 100%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,rgba(255,255,255,.7),transparent 78%);-webkit-mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,rgba(255,255,255,.7),transparent 78%)}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;background-image:radial-gradient(circle,rgba(255,255,255,.9) 0 1px,transparent 1.5px),radial-gradient(circle,rgba(247,147,26,.5) 0 1.2px,transparent 2px);background-size:150px 150px,260px 260px;animation:drift 22s ease-in-out infinite alternate}
 @keyframes drift{0%{background-position:13% 17%,73% 22%}100%{background-position:24% 30%,58% 40%}}
 .page{position:relative;z-index:2;max-width:1400px;margin:0 auto;padding:1.5rem;display:flex;flex-direction:column;gap:1.2rem}
-nav{position:sticky;top:0;z-index:100;background:rgba(3,5,11,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between}
+nav{position:sticky;top:0;z-index:100;background:rgba(3,5,11,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between}
 .nav-logo{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;background:linear-gradient(135deg,#fff,#888);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav-links{display:flex;gap:.5rem}
-.nl{background:rgba(255,255,255,.05);border:1px solid var(--border);color:rgba(255,255,255,.6);padding:.3rem .8rem;border-radius:7px;font-size:.75rem;text-decoration:none;transition:.15s}
+.nav-links{display:flex;gap:.4rem}
+.nl{background:rgba(255,255,255,.05);border:1px solid var(--border);color:rgba(255,255,255,.6);padding:.3rem .8rem;border-radius:7px;font-size:.75rem;text-decoration:none;transition:.15s;white-space:nowrap}
 .nl:hover{background:rgba(255,255,255,.1);color:#fff}
-.nl.active{border-color:rgba(247,147,26,.4);color:#f7931a;background:rgba(247,147,26,.07)}
+.nl.active{border-color:rgba(247,147,26,.5);color:#f7931a;background:rgba(247,147,26,.08)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
 .card{background:var(--card);border:1px solid var(--border);border-top:2px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden}
-.card.btc-top{border-top-color:rgba(247,147,26,.4)}
+.card.accent{border-top-color:rgba(247,147,26,.45)}
 .card-head{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1.25rem;border-bottom:1px solid var(--line)}
 .card-title{font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65)}
 .card-badge{font-size:.67rem;font-weight:600}
 /* HERO */
-.hero{background:var(--card);border:1px solid var(--border);border-top:2px solid rgba(247,147,26,.35);border-radius:20px;padding:1.6rem 2rem;display:flex;align-items:center;gap:1.5rem;box-shadow:0 0 50px rgba(247,147,26,.05)}
-.hero-icon{font-size:3.2rem;filter:drop-shadow(0 0 14px rgba(247,147,26,.55))}
+.hero{background:var(--card);border:1px solid var(--border);border-top:2px solid rgba(247,147,26,.4);border-radius:20px;padding:1.6rem 2rem;display:flex;align-items:center;gap:1.5rem;box-shadow:0 0 50px rgba(247,147,26,.05)}
+.hero-ico{font-size:3rem;filter:drop-shadow(0 0 14px rgba(247,147,26,.55))}
 .hero-name{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,#fff 30%,#f7931a);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero-sub{font-size:.75rem;color:var(--dim);margin-top:2px}
 .hero-price{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#fff;margin-left:auto}
 .hero-kpis{display:flex;gap:1.2rem}
 .kpi{text-align:right}.kpi-l{font-size:.6rem;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
 .kpi-v{font-size:.9rem;font-weight:800;margin-top:2px}
-/* CHART */
-.chart-zone{width:100%;min-height:260px;background:rgba(0,0,0,.2);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.2s;border:2px dashed rgba(255,255,255,.07)}
-.chart-zone:hover{border-color:rgba(247,147,26,.35);background:rgba(247,147,26,.02)}
-.chart-zone img{width:100%;height:100%;object-fit:contain;display:none;border-radius:4px}
+/* CHART UPLOAD */
+.chart-zone{width:100%;min-height:280px;background:rgba(0,0,0,.2);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.2s;border:2px dashed rgba(255,255,255,.07)}
+.chart-zone:hover{border-color:rgba(247,147,26,.4);background:rgba(247,147,26,.02)}
+.chart-zone img{width:100%;height:100%;object-fit:contain;display:none}
 .chart-zone.has-img img{display:block}
 .chart-zone.has-img .ph{display:none}
 .ph{text-align:center;padding:2rem;color:var(--dim)}
-.ph-icon{font-size:2.8rem;opacity:.35;margin-bottom:.6rem}
+.ph-ico{font-size:2.8rem;opacity:.35;margin-bottom:.6rem}
 .ph-txt{font-size:.85rem;font-weight:600;margin-bottom:.25rem}
 .ph-sub{font-size:.7rem;opacity:.5}
 .chart-acts{display:flex;gap:.4rem;padding:.65rem 1.25rem;border-top:1px solid var(--line);background:rgba(0,0,0,.1);flex-wrap:wrap}
 .cbt{padding:.3rem .7rem;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:rgba(255,255,255,.6);font-size:.7rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:.12s}
-.cbt:hover{background:rgba(255,255,255,.08);color:#fff}
+.cbt:hover{background:rgba(255,255,255,.09);color:#fff}
 .cbt.del{color:#ff4d4d;border-color:rgba(255,77,77,.18)}
 /* ANALYSE */
 .inp-wrap{padding:.8rem 1.25rem}
-.inp-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:.35rem}
-.txt-area{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;outline:none;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.84rem;line-height:1.7;padding:.65rem 1rem;resize:vertical;min-height:90px}
+.txt-area{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;outline:none;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.84rem;line-height:1.7;padding:.65rem 1rem;resize:vertical;min-height:110px}
 .txt-area::placeholder{color:rgba(255,255,255,.18)}
 .card-foot{padding:.55rem 1.25rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
-.sv-btn{padding:.3rem .85rem;border-radius:8px;border:1px solid rgba(247,147,26,.25);background:rgba(247,147,26,.07);color:#f7931a;font-size:.72rem;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.sv-btn{padding:.3rem .85rem;border-radius:8px;border:1px solid rgba(247,147,26,.3);background:rgba(247,147,26,.08);color:#f7931a;font-size:.72rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:.15s}
+.sv-btn:hover{background:rgba(247,147,26,.15)}
 .sv-st{font-size:.65rem;color:var(--dim)}
 /* NIVEAUX */
 .lvl-inp{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:.38rem .65rem;color:#fff;font-size:.8rem;outline:none;font-family:'Space Grotesk',sans-serif;width:100%}
 .rr-box{margin-top:.3rem;padding:.45rem .7rem;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--border);font-size:.75rem;color:var(--dim);text-align:center}
-/* INDICATEURS */
-.ind-row{padding:.6rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.04)}
-.ind-main{display:flex;justify-content:space-between;align-items:center;margin-bottom:.18rem}
-.ind-lbl{font-size:.78rem;color:var(--dim)}
-.ind-val{font-weight:800;font-size:.86rem}
-.ind-ex{font-size:.67rem;color:rgba(255,255,255,.27);line-height:1.45}
-/* SCENARIOS */
-.sc{padding:.85rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.04)}
-.sc-hd{display:flex;align-items:center;gap:.55rem;margin-bottom:.4rem}
-.sc-txt{font-size:.79rem;color:rgba(255,255,255,.62);line-height:1.55;margin-bottom:.45rem}
-.sc-lvls{display:flex;gap:.35rem;flex-wrap:wrap}
-.lt{padding:.16rem .45rem;border-radius:5px;font-size:.67rem;font-weight:700;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.55)}
-.b-bull{background:rgba(0,230,118,.09);color:#00e676;border:1px solid rgba(0,230,118,.2);padding:.18rem .55rem;border-radius:6px;font-size:.63rem;font-weight:700}
-.b-bear{background:rgba(255,77,77,.09);color:#ff4d4d;border:1px solid rgba(255,77,77,.2);padding:.18rem .55rem;border-radius:6px;font-size:.63rem;font-weight:700}
-.b-neut{background:rgba(245,166,35,.09);color:#f5a623;border:1px solid rgba(245,166,35,.2);padding:.18rem .55rem;border-radius:6px;font-size:.63rem;font-weight:700}
-/* S/R */
-.sr-row{border-bottom:1px solid rgba(255,255,255,.04)}
-.sr-main{display:flex;justify-content:space-between;align-items:center;padding:.5rem 1.25rem .25rem}
-.sr-ex{padding:0 1.25rem .45rem;font-size:.67rem;color:rgba(255,255,255,.28);line-height:1.4}
-/* LSR BAR */
-.lsr-bar{height:6px;border-radius:999px;background:rgba(255,77,77,.3);margin:.4rem 1.25rem;overflow:hidden}
-.lsr-fill{height:100%;border-radius:999px;background:var(--green);transition:width .6s}
+/* DERIVATIVES */
+.drv-block{padding:1rem 1.25rem;border-bottom:1px solid var(--line)}
+.drv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.3rem}
+.drv-label{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.75)}
+.drv-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800}
+.drv-sub{font-size:.68rem;color:var(--dim);margin-bottom:.4rem}
+.drv-explain{font-size:.72rem;color:rgba(255,255,255,.38);line-height:1.55;padding:.5rem .75rem;background:rgba(255,255,255,.025);border-radius:8px;border-left:2px solid rgba(255,255,255,.08)}
+.drv-bar{height:6px;border-radius:999px;background:rgba(255,255,255,.06);margin:.5rem 0;overflow:hidden;position:relative}
+.drv-fill{height:100%;border-radius:999px;transition:width .6s ease}
+.drv-bar-labels{display:flex;justify-content:space-between;font-size:.65rem;color:var(--dim);margin-top:.2rem}
+/* LIQUIDATIONS */
+.liq-big{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--line)}
+.liq-cell{padding:1rem 1.25rem;border-right:1px solid var(--line)}
+.liq-cell:last-child{border-right:none}
+.liq-lbl{font-size:.65rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem}
+.liq-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800}
+.liq-sub{font-size:.68rem;color:var(--dim);margin-top:.15rem}
+.liq-explain{padding:.9rem 1.25rem;font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.6;border-bottom:1px solid var(--line)}
+.liq-links{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line)}
+.liq-link{padding:.9rem 1rem;background:rgba(8,12,20,.95);text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:.3rem;transition:.2s}
+.liq-link:hover{background:rgba(255,255,255,.03)}
+.liq-link-ico{font-size:1.4rem}
+.liq-link-name{font-size:.75rem;font-weight:800;color:#fff}
+.liq-link-sub{font-size:.62rem;color:var(--dim);text-align:center}
+/* ETF CHART */
+.etf-kpis{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.etf-kpi{padding:.8rem 1rem;border-right:1px solid var(--line);text-align:center}
+.etf-kpi:last-child{border-right:none}
+.etf-kpi-l{font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem}
+.etf-kpi-v{font-size:1rem;font-weight:800}
+.etf-chart-wrap{padding:1rem 1.25rem}
+.etf-chart-title{font-size:.62rem;font-weight:700;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin-bottom:.8rem}
+.etf-bars{display:flex;align-items:flex-end;gap:6px;height:160px}
+.etf-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%}
+.etf-bar-pos{background:rgba(0,230,118,.7);border-radius:3px 3px 0 0;width:100%;min-height:2px;transition:.5s}
+.etf-bar-neg{background:rgba(255,77,77,.7);border-radius:0 0 3px 3px;width:100%;min-height:2px;transition:.5s}
+.etf-bar-last .etf-bar-pos{background:#00e676;box-shadow:0 0 8px rgba(0,230,118,.5)}
+.etf-bar-last .etf-bar-neg{background:#ff4d4d;box-shadow:0 0 8px rgba(255,77,77,.5)}
+.etf-labels{display:flex;gap:6px;margin-top:.4rem}
+.etf-lbl{flex:1;font-size:.6rem;color:var(--dim);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.etf-reading{padding:.75rem 1.25rem;font-size:.75rem;color:rgba(255,255,255,.45);line-height:1.6;border-top:1px solid var(--line)}
 input[type=file]{display:none}
-@media(max-width:950px){.grid2,.grid3{grid-template-columns:1fr}.hero{flex-wrap:wrap}.hero-price{margin-left:0}.hero-kpis{flex-wrap:wrap}}
+@media(max-width:950px){.grid2,.grid3{grid-template-columns:1fr}.hero{flex-wrap:wrap}.hero-price{margin-left:0}.hero-kpis{flex-wrap:wrap}.liq-big{grid-template-columns:1fr}.liq-cell{border-right:none;border-bottom:1px solid var(--line)}.etf-kpis{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -112,301 +122,407 @@ input[type=file]{display:none}
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-icon">₿</div>
+    <div class="hero-ico">₿</div>
     <div><div class="hero-name">Bitcoin</div><div class="hero-sub">BTC / USD · Analyse complète</div></div>
     <div class="hero-price" id="hp">$—</div>
     <div class="hero-kpis">
       <div class="kpi"><div class="kpi-l">24h</div><div class="kpi-v" id="hc">—</div></div>
       <div class="kpi"><div class="kpi-l">Market Cap</div><div class="kpi-v" id="hm">—</div></div>
-      <div class="kpi"><div class="kpi-l">vs ATH</div><div class="kpi-v" id="ha" style="color:#ff4d4d">—</div></div>
+      <div class="kpi"><div class="kpi-l">vs ATH</div><div class="kpi-v" id="ha">—</div></div>
     </div>
   </div>
 
-  <!-- ROW 1 : Graphique + Analyse + Niveaux -->
+  <!-- GRAPHIQUE + ANALYSE -->
   <div class="grid2">
-    <!-- GRAPHIQUE PRINCIPAL -->
-    <div class="card btc-top">
+    <div class="card accent">
       <div class="card-head">
-        <span class="card-title">📈 Graphique · Scénario</span>
+        <span class="card-title">📈 Mon Graphique BTC</span>
         <span class="card-badge" id="cb1" style="color:var(--dim)">Cliquer pour ajouter</span>
       </div>
       <div class="chart-zone" id="cz1" onclick="document.getElementById('ci1').click()">
-        <div class="ph"><div class="ph-icon">📊</div><div class="ph-txt">Ajouter ton graphique TradingView</div><div class="ph-sub">PNG/JPG · Glisser-déposer ou cliquer</div></div>
-        <img id="ci1-img" src="" alt="">
+        <div class="ph"><div class="ph-ico">📊</div><div class="ph-txt">Ajouter ton graphique TradingView</div><div class="ph-sub">PNG/JPG · Glisser-déposer ou cliquer · Isolé à cette page</div></div>
+        <img id="ci1img" src="" alt="">
       </div>
       <input type="file" id="ci1" accept="image/*">
       <div class="chart-acts">
         <button class="cbt" onclick="document.getElementById('ci1').click()">📷 Ajouter</button>
-        <button class="cbt" onclick="pasteImg('cz1','ci1-img','cb1','c1')">📋 Coller</button>
-        <button class="cbt del" onclick="clearImg('cz1','ci1-img','cb1','c1')">🗑️</button>
+        <button class="cbt" onclick="pasteImg('cz1','ci1img','cb1','btc_c1')">📋 Coller</button>
+        <button class="cbt del" onclick="clearImg('cz1','ci1img','cb1','btc_c1')">🗑️ Supprimer</button>
         <button class="cbt" style="margin-left:auto;color:var(--teal);border-color:rgba(0,212,170,.2)" onclick="saveAll()">💾 Tout sauvegarder</button>
       </div>
     </div>
 
     <div style="display:flex;flex-direction:column;gap:18px">
-      <!-- MON ANALYSE -->
       <div class="card">
         <div class="card-head">
-          <span class="card-title">✍️ Mon Analyse & Scénario</span>
+          <span class="card-title">✍️ Mon Analyse BTC</span>
           <div style="display:flex;gap:.35rem">
-            <button onclick="setSc('bull')" id="sb-bull" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(0,230,118,.2);background:rgba(0,230,118,.06);color:#00e676;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.45">BULL</button>
-            <button onclick="setSc('bear')" id="sb-bear" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(255,77,77,.2);background:rgba(255,77,77,.06);color:#ff4d4d;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.45">BEAR</button>
-            <button onclick="setSc('neut')" id="sb-neut" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(245,166,35,.2);background:rgba(245,166,35,.06);color:#f5a623;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.45">NEUTRE</button>
+            <button onclick="setSc('bull')" id="sb-bull" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(0,230,118,.2);background:rgba(0,230,118,.06);color:#00e676;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.4">BULL</button>
+            <button onclick="setSc('bear')" id="sb-bear" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(255,77,77,.2);background:rgba(255,77,77,.06);color:#ff4d4d;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.4">BEAR</button>
+            <button onclick="setSc('neut')" id="sb-neut" style="padding:.18rem .55rem;border-radius:6px;border:1px solid rgba(245,166,35,.2);background:rgba(245,166,35,.06);color:#f5a623;font-size:.63rem;cursor:pointer;font-weight:700;opacity:.4">NEUTRE</button>
           </div>
         </div>
         <div class="inp-wrap">
-          <textarea class="txt-area" id="ta-main" placeholder="Mon analyse BTC...&#10;Ex: Consolidation en range 68-72k. Attente breakout avec volume. Invalidation sous 67k..."></textarea>
+          <textarea class="txt-area" id="ta" placeholder="Mon analyse BTC du moment...&#10;&#10;Ex: Structure de marché haussière au-dessus de 68k. Attente d'un retest du support avant reprise. Invalidation si clôture journalière sous 66,500$..."></textarea>
         </div>
         <div class="card-foot">
-          <span class="sv-st" id="sv-st">Non sauvegardé</span>
+          <span class="sv-st" id="svst">Non sauvegardé</span>
           <button class="sv-btn" onclick="saveAll()">💾 Sauvegarder</button>
         </div>
       </div>
 
-      <!-- MES NIVEAUX + R:R -->
       <div class="card">
         <div class="card-head">
-          <span class="card-title">🎯 Mes Niveaux · R:R</span>
+          <span class="card-title">🎯 Mes Niveaux · Calcul R:R</span>
           <span class="card-badge" id="rr-badge" style="color:var(--dim)">En attente</span>
         </div>
         <div style="padding:.75rem 1.25rem;display:flex;flex-direction:column;gap:.45rem">
-          <div style="display:grid;grid-template-columns:70px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--gold);font-weight:700">ENTRÉE</span><input class="lvl-inp" id="l-en" type="text" placeholder="$70,500"></div>
-          <div style="display:grid;grid-template-columns:70px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--red);font-weight:700">STOP</span><input class="lvl-inp" id="l-sl" type="text" placeholder="$68,000"></div>
-          <div style="display:grid;grid-template-columns:70px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--green);font-weight:700">TP 1</span><input class="lvl-inp" id="l-t1" type="text" placeholder="$74,000"></div>
-          <div style="display:grid;grid-template-columns:70px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--green);font-weight:700">TP 2</span><input class="lvl-inp" id="l-t2" type="text" placeholder="$78,000"></div>
-          <div class="rr-box" id="rr-box">Remplir Entrée + SL + TP1 pour voir le R:R</div>
+          <div style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--gold);font-weight:700">ENTRÉE</span><input class="lvl-inp" id="l-en" type="text" placeholder="ex: $70,500"></div>
+          <div style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--red);font-weight:700">STOP LOSS</span><input class="lvl-inp" id="l-sl" type="text" placeholder="ex: $68,000"></div>
+          <div style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--green);font-weight:700">TP 1</span><input class="lvl-inp" id="l-t1" type="text" placeholder="ex: $74,000"></div>
+          <div style="display:grid;grid-template-columns:80px 1fr;align-items:center;gap:.4rem"><span style="font-size:.7rem;color:var(--green);font-weight:700">TP 2</span><input class="lvl-inp" id="l-t2" type="text" placeholder="ex: $78,000"></div>
+          <div class="rr-box" id="rr-box">Remplir Entrée + SL + TP1 pour voir le R:R automatique</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ROW 2 : Derivatives + Liquidations + ETF -->
-  <div class="grid3">
-    <!-- DERIVATIVES -->
-    <div class="card">
-      <div class="card-head"><span class="card-title">⚡ Derivatives · BTC</span><span class="card-badge" id="drv-badge" style="color:var(--teal)">⏳</span></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Funding Rate</span><span class="ind-val" id="d-fr">—</span></div><div class="ind-ex">Positif = longs paient les shorts. Négatif = shorts paient. Extrêmes = signal de retournement potentiel.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Open Interest</span><span class="ind-val" id="d-oi" style="color:var(--teal)">—</span></div><div class="ind-ex">Capital total engagé. OI + prix montants = tendance forte. OI baissant = désengagement du marché.</div></div>
-      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">Long / Short Ratio</span><span class="ind-val" id="d-ls">—</span></div>
-        <div class="lsr-bar"><div class="lsr-fill" id="d-lsb" style="width:50%"></div></div>
-        <div class="ind-ex" style="padding:0 0 .4rem">Ratio longs vs shorts. >60% longs = suracheté. <40% = squeeze potentiel.</div>
-      </div>
-    </div>
-
-    <!-- LIQUIDATIONS BTC -->
-    <div class="card">
-      <div class="card-head"><span class="card-title">💥 Liquidations · BTC</span><span class="card-badge" id="liq-badge" style="color:#d6dbe2">⏳</span></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total BTC liquidé 24h</span><span class="ind-val" id="l-tot" style="color:var(--red)">—</span></div><div class="ind-ex">Montant total forcé en clôture sur BTC. Pic = volatilité extrême passée.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Longs liquidés</span><span class="ind-val" id="l-lng" style="color:var(--green)">—</span></div><div class="ind-ex">Bulls forcés de vendre → pression baissière à court terme.</div></div>
-      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">Shorts liquidés</span><span class="ind-val" id="l-sht" style="color:var(--red)">—</span></div><div class="ind-ex">Bears forcés de racheter → short squeeze, pression haussière.</div></div>
-    </div>
-
-    <!-- ETF FLOWS -->
-    <div class="card">
-      <div class="card-head"><span class="card-title">🏦 ETF Bitcoin · Flux</span><span class="card-badge" id="etf-badge" style="color:var(--teal)">⏳</span></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">Total net</span><span class="ind-val" id="e-tot">—</span></div><div class="ind-ex">Flux nets entrant/sortant des ETF spot US. Positif = institutions achètent.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">IBIT · BlackRock</span><span class="ind-val" id="e-ibit">—</span></div><div class="ind-ex">Le plus gros ETF BTC. Signal institutionnel fort.</div></div>
-      <div class="ind-row"><div class="ind-main"><span class="ind-lbl">FBTC · Fidelity</span><span class="ind-val" id="e-fbtc">—</span></div><div class="ind-ex">2ème ETF en termes d'actifs sous gestion.</div></div>
-      <div class="ind-row" style="border:none"><div class="ind-main"><span class="ind-lbl">GBTC · Grayscale</span><span class="ind-val" id="e-gbtc">—</span></div><div class="ind-ex">Historiquement en sortie de capitaux depuis conversion en ETF.</div></div>
-    </div>
-  </div>
-
-  <!-- ROW 3 : S/R + Graphique 2 -->
-  <div class="grid2">
-    <!-- NIVEAUX S/R -->
-    <div class="card">
-      <div class="card-head"><span class="card-title">📐 Niveaux S/R · Pivot Points</span><span class="card-badge" id="sr-badge" style="color:var(--gold)">Live</span></div>
-      <div id="srWrap"><div style="padding:1rem 1.25rem;color:var(--dim);font-size:.75rem">⏳ Calcul en cours…</div></div>
-    </div>
-
-    <!-- GRAPHIQUE 2 HTF -->
-    <div class="card">
-      <div class="card-head"><span class="card-title">📊 Vue HTF (Hebdo / Mensuel)</span><span class="card-badge" id="cb2" style="color:var(--dim)">Ajouter</span></div>
-      <div class="chart-zone" id="cz2" onclick="document.getElementById('ci2').click()">
-        <div class="ph"><div class="ph-icon">📈</div><div class="ph-txt">Vue Higher Time Frame</div><div class="ph-sub">Contexte macro du prix</div></div>
-        <img id="ci2-img" src="" alt="">
-      </div>
-      <input type="file" id="ci2" accept="image/*">
-      <div class="chart-acts">
-        <button class="cbt" onclick="document.getElementById('ci2').click()">📷 Ajouter</button>
-        <button class="cbt del" onclick="clearImg('cz2','ci2-img','cb2','c2')">🗑️</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROW 4 : Scénarios HarK -->
+  <!-- DERIVATIVES -->
   <div class="card">
-    <div class="card-head"><span class="card-title">📚 Scénarios HarK · BTC</span><span class="card-badge" style="color:var(--gold)">Éditable</span></div>
-    <div id="scenarios-wrap">
-      <div class="sc"><div class="sc-hd"><span class="b-bull">BULLISH</span><span style="font-size:.87rem;font-weight:700">Breakout de range vers les ATH</span></div><div class="sc-txt">BTC casse 72k avec volume → cible 76-78k puis potentiellement ATH. Structure haussière intacte au-dessus de 68k.</div><div class="sc-lvls"><span class="lt" style="color:var(--green)">Entrée: 72,000$</span><span class="lt" style="color:var(--red)">SL: 68,500$</span><span class="lt" style="color:var(--green)">TP1: 76,000$</span><span class="lt" style="color:var(--green)">TP2: 79,500$</span><span class="lt" style="color:var(--gold)">R:R ≈ 2</span></div></div>
-      <div class="sc"><div class="sc-hd"><span class="b-bear">BEARISH</span><span style="font-size:.87rem;font-weight:700">Rechute vers zone de demande</span></div><div class="sc-txt">BTC perd 68k sur clôture journalière → retour probable 63-65k. Zone de liquidité majeure. Invalidation si retour rapide >69k.</div><div class="sc-lvls"><span class="lt" style="color:var(--red)">Short: 67,800$</span><span class="lt" style="color:var(--red)">SL: 69,200$</span><span class="lt" style="color:var(--green)">TP: 64,000$</span><span class="lt" style="color:var(--gold)">R:R ≈ 2.7</span></div></div>
-      <div class="sc" style="border:none"><div class="sc-hd"><span class="b-neut">NEUTRE</span><span style="font-size:.87rem;font-weight:700">Range 68k-72k — Attente</span></div><div class="sc-txt">Pas de position directionnelle avant breakout confirmé. Scalp sur bornes du range. Volume = clé.</div><div class="sc-lvls"><span class="lt">Range bas: 68k</span><span class="lt">Range haut: 72k</span><span class="lt" style="color:var(--dim)">Attente</span></div></div>
+    <div class="card-head">
+      <span class="card-title">⚡ Derivatives · BTC</span>
+      <span class="card-badge" id="drv-badge" style="color:var(--teal)">Bybit · Binance · Live</span>
+    </div>
+    <div class="grid3" style="gap:0;border-bottom:1px solid var(--line)">
+
+      <div class="drv-block" style="border-right:1px solid var(--line)">
+        <div class="drv-header">
+          <div class="drv-label">Funding Rate</div>
+          <div class="drv-val" id="d-fr">—</div>
+        </div>
+        <div class="drv-sub" id="d-fr-sub">Toutes les 8h · Bybit</div>
+        <div class="drv-explain">
+          Le Funding Rate est le coût de maintien d'une position sur les marchés futures perpétuels.<br><br>
+          <strong style="color:#00e676">Positif</strong> = les longs paient les shorts → le marché est majoritairement haussier, les bulls sont plus nombreux.<br>
+          <strong style="color:#ff4d4d">Négatif</strong> = les shorts paient les longs → le marché est baissier, les bears dominent.<br><br>
+          ⚠️ Un Funding Rate <strong>extrême</strong> (+0.1% ou -0.1%) signale souvent un retournement imminent : trop de monde d'un côté.
+        </div>
+      </div>
+
+      <div class="drv-block" style="border-right:1px solid var(--line)">
+        <div class="drv-header">
+          <div class="drv-label">Open Interest</div>
+          <div class="drv-val" id="d-oi" style="color:var(--teal)">—</div>
+        </div>
+        <div class="drv-sub">Capital total engagé · Bybit</div>
+        <div class="drv-explain">
+          L'Open Interest (OI) représente le montant total de capital engagé dans les contrats futures ouverts.<br><br>
+          <strong style="color:#00e676">OI en hausse + Prix en hausse</strong> = tendance forte, de l'argent frais entre sur le marché.<br>
+          <strong style="color:#ff4d4d">OI en baisse + Prix en baisse</strong> = capitulation, les gens ferment leurs positions.<br>
+          <strong style="color:#f5a623">OI en hausse + Prix en baisse</strong> = accumulation de shorts, pression baissière.
+        </div>
+      </div>
+
+      <div class="drv-block">
+        <div class="drv-header">
+          <div class="drv-label">Long / Short Ratio</div>
+          <div class="drv-val" id="d-ls">—</div>
+        </div>
+        <div class="drv-sub">Ratio global · Binance Futures</div>
+        <div class="drv-bar"><div class="drv-fill" id="d-lsbar" style="width:50%;background:var(--green)"></div></div>
+        <div class="drv-bar-labels"><span style="color:var(--green)">Longs</span><span style="color:var(--red)">Shorts</span></div>
+        <div class="drv-explain" style="margin-top:.5rem">
+          Ratio entre les traders en position longue vs courte.<br><br>
+          <strong style="color:#ff4d4d">&gt;65% Longs</strong> = le marché est suracheté, risque de liquidations en cascade si le prix baisse.<br>
+          <strong style="color:#00e676">&lt;35% Longs</strong> = le marché est survendu, potentiel short squeeze violent.<br>
+          Zone neutre 45-55% = pas de signal extrême.
+        </div>
+      </div>
+    </div>
+    <div style="padding:.75rem 1.25rem;font-size:.73rem;color:rgba(255,255,255,.4);border-top:1px solid var(--line)" id="drv-reading">Chargement…</div>
+  </div>
+
+  <!-- LIQUIDATIONS -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">💥 Liquidations BTC · 24h</span>
+      <span class="card-badge" id="liq-badge" style="color:#d6dbe2">⏳ Chargement…</span>
+    </div>
+    <div class="liq-big">
+      <div class="liq-cell">
+        <div class="liq-lbl">Total BTC liquidé</div>
+        <div class="liq-val" id="l-tot" style="color:var(--red)">—</div>
+        <div class="liq-sub">Toutes exchanges confondues</div>
+      </div>
+      <div class="liq-cell">
+        <div class="liq-lbl">Longs liquidés</div>
+        <div class="liq-val" id="l-lng" style="color:var(--green)">—</div>
+        <div class="liq-sub" id="l-lng-pct">— du total</div>
+      </div>
+      <div class="liq-cell">
+        <div class="liq-lbl">Shorts liquidés</div>
+        <div class="liq-val" id="l-sht" style="color:var(--red)">—</div>
+        <div class="liq-sub" id="l-sht-pct">— du total</div>
+      </div>
+    </div>
+    <div class="liq-explain" id="liq-reading">
+      <strong>Qu'est-ce qu'une liquidation ?</strong> Quand un trader avec levier ne peut plus couvrir ses pertes, l'exchange ferme sa position de force.<br><br>
+      <strong style="color:var(--green)">Longs liquidés</strong> = des acheteurs à effet de levier ont été forcés de vendre → crée une pression baissière supplémentaire.<br>
+      <strong style="color:var(--red)">Shorts liquidés</strong> = des vendeurs à découvert ont été forcés de racheter → crée un short squeeze haussier.<br><br>
+      Un pic de liquidations = moment de volatilité extrême passée. Souvent un signal de retournement à court terme.
+    </div>
+    <div class="liq-links">
+      <a href="https://www.coinglass.com/liquidations/BTC" target="_blank" class="liq-link">
+        <div class="liq-link-ico">⚡</div><div class="liq-link-name">Liquidation BTC</div><div class="liq-link-sub">Heatmap · Live</div>
+      </a>
+      <a href="https://www.coinglass.com/LiquidationData" target="_blank" class="liq-link">
+        <div class="liq-link-ico">📊</div><div class="liq-link-name">Liquidation Data</div><div class="liq-link-sub">Détail Long / Short</div>
+      </a>
+      <a href="https://www.coinglass.com/pro/futures/LiquidationMap" target="_blank" class="liq-link">
+        <div class="liq-link-ico">🗺️</div><div class="liq-link-name">Liquidation Map</div><div class="liq-link-sub">Niveaux de prix</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ETF BITCOIN -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">🏦 ETF Bitcoin · Flux nets (US$M)</span>
+      <span class="card-badge" id="etf-badge" style="color:var(--teal)">⏳ Chargement…</span>
+    </div>
+    <div class="etf-kpis">
+      <div class="etf-kpi"><div class="etf-kpi-l">Total net</div><div class="etf-kpi-v" id="e-tot">—</div></div>
+      <div class="etf-kpi"><div class="etf-kpi-l">IBIT · BlackRock</div><div class="etf-kpi-v" id="e-ibit">—</div></div>
+      <div class="etf-kpi"><div class="etf-kpi-l">FBTC · Fidelity</div><div class="etf-kpi-v" id="e-fbtc">—</div></div>
+      <div class="etf-kpi"><div class="etf-kpi-l">GBTC · Grayscale</div><div class="etf-kpi-v" id="e-gbtc">—</div></div>
+    </div>
+    <div class="etf-chart-wrap">
+      <div class="etf-chart-title">Flux nets · 10 derniers jours de trading</div>
+      <div class="etf-bars" id="etf-bars"></div>
+      <div class="etf-labels" id="etf-labels"></div>
+    </div>
+    <div class="etf-reading" id="etf-reading">Chargement des données Farside…</div>
+  </div>
+
+  <!-- GRAPHIQUE 2 HTF -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">📊 Graphique BTC · Vue HTF (Hebdo/Mensuel)</span>
+      <span class="card-badge" id="cb2" style="color:var(--dim)">Contexte macro</span>
+    </div>
+    <div class="chart-zone" id="cz2" onclick="document.getElementById('ci2').click()">
+      <div class="ph"><div class="ph-ico">📈</div><div class="ph-txt">Vue Higher Time Frame</div><div class="ph-sub">Graphique hebdo ou mensuel pour le contexte macro · Isolé à cette page</div></div>
+      <img id="ci2img" src="" alt="">
+    </div>
+    <input type="file" id="ci2" accept="image/*">
+    <div class="chart-acts">
+      <button class="cbt" onclick="document.getElementById('ci2').click()">📷 Ajouter</button>
+      <button class="cbt" onclick="pasteImg('cz2','ci2img','cb2','btc_c2')">📋 Coller</button>
+      <button class="cbt del" onclick="clearImg('cz2','ci2img','cb2','btc_c2')">🗑️ Supprimer</button>
     </div>
   </div>
 
 </div>
-
 <script>
-// ── DATA LIVE ──
+const COIN='bitcoin', SYM_BYBIT='BTCUSDT', SYM_BINANCE='BTCUSDT', ATH=126296, PREFIX='btc';
+
 async function loadData(){
-  try {
-    const [pr, fgr, dr] = await Promise.all([
-      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_market_cap=true'),
-      fetch('https://api.alternative.me/fng/?limit=1'),
-      fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT'),
+  try{
+    const[pr,dr]=await Promise.all([
+      fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`),
+      fetch(`https://api.bybit.com/v5/market/tickers?category=linear&symbol=${SYM_BYBIT}`)
     ]);
-    const p = (await pr.json()).bitcoin;
-    const up = p.usd_24h_change >= 0;
-    document.getElementById('hp').textContent = '$' + Math.round(p.usd).toLocaleString();
-    const ce = document.getElementById('hc'); ce.textContent=(up?'+':'')+p.usd_24h_change.toFixed(2)+'%'; ce.style.color=up?'#00e676':'#ff4d4d';
+    const p=(await pr.json())[COIN];
+    const up=p.usd_24h_change>=0;
+    document.getElementById('hp').textContent='$'+Math.round(p.usd).toLocaleString('fr-FR');
+    const ce=document.getElementById('hc');ce.textContent=(up?'+':'')+p.usd_24h_change.toFixed(2)+'%';ce.style.color=up?'#00e676':'#ff4d4d';
     document.getElementById('hm').textContent='$'+(p.usd_market_cap/1e12).toFixed(2)+'T';
-    const ath=((p.usd/126296*100)-100).toFixed(1);
-    const ae=document.getElementById('ha'); ae.textContent=ath+'%'; ae.style.color=parseFloat(ath)>=0?'#00e676':'#ff4d4d';
+    const ath=((p.usd/ATH*100)-100).toFixed(1);
+    const ae=document.getElementById('ha');ae.textContent=ath+'%';ae.style.color=parseFloat(ath)>=0?'#00e676':'#ff4d4d';
 
-    const d = (await dr.json()).result?.list?.[0];
-    const fr = parseFloat(d?.fundingRate)*100;
-    const frE=document.getElementById('d-fr'); frE.textContent=(fr>=0?'+':'')+fr.toFixed(4)+'%'; frE.style.color=fr>0.05?'#ff4d4d':fr>0?'#f5a623':fr>-0.05?'#00d4aa':'#ff4d4d';
-    document.getElementById('drv-badge').textContent='Bybit · Live'; document.getElementById('drv-badge').style.color='#00d4aa';
-    const oi=parseFloat(d?.openInterestValue); if(oi) document.getElementById('d-oi').textContent='$'+(oi/1e9).toFixed(2)+'B';
+    const d=(await dr.json()).result?.list?.[0];
+    const fr=parseFloat(d?.fundingRate)*100;
+    const frE=document.getElementById('d-fr');
+    frE.textContent=(fr>=0?'+':'')+fr.toFixed(4)+'%';
+    frE.style.color=fr>0.05?'#ff4d4d':fr>0.01?'#f5a623':fr>-0.01?'rgba(255,255,255,.7)':fr>-0.05?'#00d4aa':'#00e676';
+    document.getElementById('d-fr-sub').textContent=(fr>0.05?'⚠️ Haussier extrême — risque retournement':fr>0.01?'Légèrement haussier':fr>-0.01?'Neutre équilibré':fr>-0.05?'Légèrement baissier':'⚠️ Baissier extrême — risque squeeze')+' · Bybit';
 
-    // Prix pour S/R
-    computeSR(p.usd);
-  } catch(e){}
+    const oi=parseFloat(d?.openInterestValue);
+    if(oi){const e=document.getElementById('d-oi');e.textContent='$'+(oi/1e9).toFixed(2)+'B';}
+    document.getElementById('drv-badge').textContent='Bybit · Binance · Live';
+  }catch(e){console.log(e)}
 
-  // L/S Binance
-  try {
-    const ls = await (await fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1')).json();
-    const lp=parseFloat(ls[0]?.longAccount)*100; const sp=100-lp;
-    const le=document.getElementById('d-ls'); le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S'; le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
-    document.getElementById('d-lsb').style.width=lp+'%';
-  } catch{}
+  try{
+    const ls=await(await fetch(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYM_BINANCE}&period=5m&limit=1`)).json();
+    const lp=parseFloat(ls[0]?.longAccount)*100;const sp=100-lp;
+    const le=document.getElementById('d-ls');le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S';
+    le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
+    document.getElementById('d-lsbar').style.width=lp+'%';
+    document.getElementById('d-lsbar').style.background=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
+    const reading=lp>65?`⚠️ ${lp.toFixed(1)}% de longs — marché suracheté, risque de cascade baissière si le prix casse un support`:lp<35?`⚠️ ${sp.toFixed(1)}% de shorts — potentiel short squeeze violent si le prix monte`:lp>55?`${lp.toFixed(1)}% de longs — légère dominance haussière, surveiller les supports`:lp<45?`${sp.toFixed(1)}% de shorts — légère pression baissière, surveiller les résistances`:`Marché équilibré (${lp.toFixed(1)}% L · ${sp.toFixed(1)}% S) — pas de signal extrême`;
+    document.getElementById('drv-reading').textContent='Lecture : '+reading;
+  }catch{}
 }
 
-// Liquidations BTC
 async function loadLiq(){
-  try {
+  try{
     const r=await fetch('/api/liquidations',{signal:AbortSignal.timeout(30000)});
-    const d=await r.json(); if(d.error) throw new Error(d.error);
+    const d=await r.json();if(d.error)throw new Error(d.error);
     document.getElementById('l-tot').textContent=d.total||'—';
     document.getElementById('l-lng').textContent=d.long||'—';
     document.getElementById('l-sht').textContent=d.short||'—';
-    document.getElementById('liq-badge').textContent='CoinGlass · Live'; document.getElementById('liq-badge').style.color='#00d4aa';
-  } catch{ document.getElementById('liq-badge').textContent='⚠️ Erreur'; document.getElementById('liq-badge').style.color='#ff4d4d'; }
+    if(d.longPct!=='—')document.getElementById('l-lng-pct').textContent=d.longPct+'% du total';
+    if(d.shortPct!=='—')document.getElementById('l-sht-pct').textContent=d.shortPct+'% du total';
+    document.getElementById('liq-badge').textContent='CoinGlass · Live';
+    document.getElementById('liq-badge').style.color='#00d4aa';
+    const dom=d.dom,pct=d.domPct;
+    document.getElementById('liq-reading').innerHTML=`<strong>Lecture :</strong> ${d.total} liquidés sur BTC en 24h — `+(dom==='longs'?`<strong style="color:#ff4d4d">longs dominants (${pct}%)</strong> → des acheteurs à levier ont été forcés de vendre. Signal de pression baissière à court terme.`:`<strong style="color:#00e676">shorts dominants (${pct}%)</strong> → des vendeurs à découvert ont été liquidés. Short squeeze en cours ou terminé.`)+`<br><br><em style="color:rgba(255,255,255,.3)">Qu'est-ce qu'une liquidation ? Quand un trader avec levier ne peut plus couvrir ses pertes, l'exchange ferme sa position de force.</em>`;
+  }catch{document.getElementById('liq-badge').textContent='⚠️ Erreur';document.getElementById('liq-badge').style.color='#ff4d4d';}
 }
 
-// ETF
 async function loadETF(){
-  try {
+  try{
     const r=await fetch('/api/etf',{signal:AbortSignal.timeout(20000)});
-    const d=await r.json(); if(d.error) throw new Error(d.error);
-    const fmt=v=>{const n=parseFloat(v);if(isNaN(n)||v==='—')return'—';return(n>=0?'+':'')+n.toFixed(1)+'M'};
+    const d=await r.json();if(d.error)throw new Error(d.error);
+    const fmt=v=>{const n=parseFloat(v);if(isNaN(n))return'—';return(n>=0?'+':'')+n.toFixed(1)+'M'};
     const col=v=>parseFloat(v)>=0?'#00e676':'#ff4d4d';
-    const set=(id,v)=>{const e=document.getElementById(id);e.textContent=fmt(v);e.style.color=col(v)};
-    set('e-tot',d.total); set('e-ibit',d.ibit); set('e-fbtc',d.fbtc); set('e-gbtc',d.gbtc);
-    document.getElementById('etf-badge').textContent='Farside · Live'; document.getElementById('etf-badge').style.color=parseFloat(d.total)>=0?'#00e676':'#ff4d4d';
-  } catch{ document.getElementById('etf-badge').textContent='⚠️ Erreur'; document.getElementById('etf-badge').style.color='#ff4d4d'; }
+    ['tot','ibit','fbtc','gbtc'].forEach((k,i)=>{
+      const ids=['e-tot','e-ibit','e-fbtc','e-gbtc'];const vals=[d.total,d.ibit,d.fbtc,d.gbtc];
+      const e=document.getElementById(ids[i]);e.textContent=fmt(vals[i]);e.style.color=col(vals[i]);
+    });
+    document.getElementById('etf-badge').textContent='Farside · '+d.date;
+    document.getElementById('etf-badge').style.color=parseFloat(d.total)>=0?'#00e676':'#ff4d4d';
+
+    // GRAPHIQUE BARRES
+    const hist=d.history||[];
+    const maxAbs=Math.max(...hist.map(h=>Math.abs(h.total)),1);
+    const barsEl=document.getElementById('etf-bars');
+    const labsEl=document.getElementById('etf-labels');
+    const chartH=150;
+    barsEl.innerHTML=hist.map((h,i)=>{
+      const isLast=i===hist.length-1;
+      const pct=Math.abs(h.total)/maxAbs;
+      const px=Math.max(Math.round(pct*chartH),2);
+      const isPos=h.total>=0;
+      return`<div class="etf-bar-wrap${isLast?' etf-bar-last':''}">
+        <div style="flex:1;display:flex;align-items:flex-end">${isPos?`<div class="${isPos?'etf-bar-pos':'etf-bar-neg'}" style="height:${px}px" title="${h.total>0?'+':''}${h.total.toFixed(1)}M"></div>`:'<div style="height:1px"></div>'}</div>
+        <div style="height:3px;background:rgba(255,255,255,.1);width:100%"></div>
+        <div style="flex:1;display:flex;align-items:flex-start">${!isPos?`<div class="etf-bar-neg" style="height:${px}px" title="${h.total.toFixed(1)}M"></div>`:'<div style="height:1px"></div>'}</div>
+      </div>`;
+    }).join('');
+    labsEl.innerHTML=hist.map(h=>`<div class="etf-lbl">${h.date}</div>`).join('');
+
+    const tot=parseFloat(d.total);
+    document.getElementById('etf-reading').innerHTML=`<strong>Lecture :</strong> Dernière session (${d.date}) : <strong style="color:${tot>=0?'#00e676':'#ff4d4d'}">${tot>=0?'+':''}${tot.toFixed(1)}M$</strong> de flux nets. `+(tot>500?'Forte entrée institutionnelle → signal haussier puissant.':tot>0?'Entrée positive → intérêt institutionnel maintenu.':tot>-500?'Légère sortie → quelques prises de profit, pas alarmant.':'Sorties importantes → désinvestissement institutionnel, signal baissier.');
+  }catch(e){document.getElementById('etf-badge').textContent='⚠️ Erreur';document.getElementById('etf-badge').style.color='#ff4d4d';}
 }
 
-// S/R Pivot Points
-function computeSR(price){
-  const H=price*1.02,L=price*0.98,C=price;
-  const PP=(H+L+C)/3, R1=2*PP-L, R2=PP+(H-L), R3=H+2*(PP-L), S1=2*PP-H, S2=PP-(H-L), S3=L-2*(H-PP);
-  const fmt=n=>'$'+Math.round(n).toLocaleString('fr-FR');
-  const pct=n=>((n-price)/price*100);
-  const sr=(lbl,val,col,icon,ex)=>`<div class="sr-row"><div class="sr-main"><span style="font-size:.78rem;font-weight:700;color:${col}">${icon} ${lbl}</span><div style="text-align:right"><span style="font-weight:900;color:${col};font-size:.9rem">${fmt(val)}</span><span style="font-size:.68rem;color:rgba(255,255,255,.3);margin-left:.4rem">${pct(val)>=0?'+':''}${pct(val).toFixed(1)}%</span></div></div><div class="sr-ex">${ex}</div></div>`;
-  document.getElementById('srWrap').innerHTML=
-    sr('R3',R3,'#ff4d4d','⬆','Résistance extrême — zone de retournement majeur, peu probable à court terme')+
-    sr('R2',R2,'#ff7b7b','⬆','Résistance forte — attention si le prix approche, souvent rejet')+
-    sr('R1',R1,'#ffaa7b','⬆','Première résistance — zone de prise de profit pour les longs')+
-    `<div style="border-top:1px solid rgba(245,166,35,.2);border-bottom:1px solid rgba(245,166,35,.2);background:rgba(245,166,35,.05)"><div class="sr-main" style="padding:.5rem 1.25rem .25rem"><span style="font-size:.78rem;font-weight:700;color:#f5a623">◆ PIVOT</span><span style="font-weight:900;color:#f5a623;font-size:.92rem">${fmt(PP)}</span></div><div class="sr-ex">Point pivot — neutre. Au-dessus = bullish, en dessous = bearish.</div></div>`+
-    sr('S1',S1,'#7bffaa','⬇','Premier support — zone d\'achat pour rebond court terme')+
-    sr('S2',S2,'#00e676','⬇','Support fort — zone de rebond majeur, surveiller les réactions')+
-    sr('S3',S3,'#00b853','⬇','Support extrême — si cassé, signal très baissier');
-  document.getElementById('sr-badge').textContent='Prix actuel · Live';
+// Graphiques
+async function saveChartGH(key, base64){
+  try{
+    await fetch('/api/save-chart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chartKey:key,imageBase64:base64})});
+  }catch(e){console.log('GH save error:',e)}
 }
 
-// ── GRAPHIQUES ──
 function setupImg(zoneId,imgId,inputId,badgeId,key){
   const input=document.getElementById(inputId);
   const zone=document.getElementById(zoneId);
   input.addEventListener('change',e=>{
-    const f=e.target.files[0]; if(!f) return;
+    const f=e.target.files[0];if(!f)return;
     const reader=new FileReader();
     reader.onload=ev=>{
-      document.getElementById(imgId).src=ev.target.result;
+      const src=ev.target.result;
+      document.getElementById(imgId).src=src;
       zone.classList.add('has-img');
-      document.getElementById(badgeId).textContent='✅ '+f.name.slice(0,18);
-      document.getElementById(badgeId).style.color='#00e676';
-      try{localStorage.setItem(key,ev.target.result)}catch{}
-    };
-    reader.readAsDataURL(f);
+      document.getElementById(badgeId).textContent='⏳ Sauvegarde…';
+      document.getElementById(badgeId).style.color='#f5a623';
+      try{localStorage.setItem(key,src)}catch{}
+      saveChartGH(key,src).then(()=>{
+        document.getElementById(badgeId).textContent='✅ '+f.name.slice(0,20);
+        document.getElementById(badgeId).style.color='#00e676';
+      });
+    };reader.readAsDataURL(f);
   });
-  zone.addEventListener('dragover',e=>{e.preventDefault();zone.style.borderColor='#f7931a'});
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.style.borderColor='var(--accent)'});
   zone.addEventListener('dragleave',()=>zone.style.borderColor='');
   zone.addEventListener('drop',e=>{e.preventDefault();zone.style.borderColor='';const f=e.dataTransfer.files[0];if(f?.type.startsWith('image/')){input.files=e.dataTransfer.files;input.dispatchEvent(new Event('change'))}});
-  try{const s=localStorage.getItem(key);if(s){document.getElementById(imgId).src=s;zone.classList.add('has-img');document.getElementById(badgeId).textContent='✅ Sauvegardé';document.getElementById(badgeId).style.color='#00e676'}}catch{}
+  // Charger depuis localStorage d'abord, puis GitHub
+  try{const s=localStorage.getItem(key);if(s){document.getElementById(imgId).src=s;zone.classList.add('has-img');document.getElementById(badgeId).textContent='✅ Local';document.getElementById(badgeId).style.color='#00e676'}}catch{}
+  fetch(`/api/get-chart?key=${key}`).then(r=>r.json()).then(d=>{
+    if(d.ok&&d.data){
+      document.getElementById(imgId).src=d.data;
+      zone.classList.add('has-img');
+      document.getElementById(badgeId).textContent='✅ GitHub';
+      document.getElementById(badgeId).style.color='#00d4aa';
+      try{localStorage.setItem(key,d.data)}catch{}
+    }
+  }).catch(()=>{});
 }
-
 function clearImg(zoneId,imgId,badgeId,key){
-  document.getElementById(imgId).src='';
-  document.getElementById(zoneId).classList.remove('has-img');
-  document.getElementById(badgeId).textContent='Ajouter'; document.getElementById(badgeId).style.color='rgba(255,255,255,.35)';
+  document.getElementById(imgId).src='';document.getElementById(zoneId).classList.remove('has-img');
+  document.getElementById(badgeId).textContent='Cliquer pour ajouter';document.getElementById(badgeId).style.color='rgba(255,255,255,.35)';
   try{localStorage.removeItem(key)}catch{}
 }
-
 async function pasteImg(zoneId,imgId,badgeId,key){
   try{
     const items=await navigator.clipboard.read();
     for(const item of items)for(const type of item.types)if(type.startsWith('image/')){
-      const blob=await item.getType(type);
-      const r=new FileReader(); r.onload=ev=>{document.getElementById(imgId).src=ev.target.result;document.getElementById(zoneId).classList.add('has-img');document.getElementById(badgeId).textContent='✅ Collé';document.getElementById(badgeId).style.color='#00e676';try{localStorage.setItem(key,ev.target.result)}catch{}};
-      r.readAsDataURL(blob); return;
+      const blob=await item.getType(type);const r=new FileReader();
+      r.onload=ev=>{document.getElementById(imgId).src=ev.target.result;document.getElementById(zoneId).classList.add('has-img');document.getElementById(badgeId).textContent='✅ Collé';document.getElementById(badgeId).style.color='#00e676';try{localStorage.setItem(key,ev.target.result)}catch{}};
+      r.readAsDataURL(blob);return;
     }
-  } catch{alert('Copie ton graphique TradingView avec Ctrl+C puis réessaie.');}
+  }catch{alert('Copie ton graphique TradingView (Ctrl+C) puis réessaie.');}
 }
 
-// ── SCÉNARIO + SAVE ──
-let sc=localStorage.getItem('btc_sc')||'neut';
-function setSc(t){sc=t;localStorage.setItem('btc_sc',t);['bull','bear','neut'].forEach(x=>document.getElementById('sb-'+x).style.opacity=x===t?'1':'.35')}
+// Scénario + Save
+let sc=localStorage.getItem(PREFIX+'_sc')||'neut';
+function setSc(t){sc=t;localStorage.setItem(PREFIX+'_sc',t);['bull','bear','neut'].forEach(x=>document.getElementById('sb-'+x).style.opacity=x===t?'1':'.4')}
 setSc(sc);
-
-function saveAll(){
-  const data={analyse:document.getElementById('ta-main').value,sc,en:document.getElementById('l-en').value,sl:document.getElementById('l-sl').value,t1:document.getElementById('l-t1').value,t2:document.getElementById('l-t2').value,at:new Date().toLocaleString('fr-FR')};
-  localStorage.setItem('btc_data',JSON.stringify(data));
-  const st=document.getElementById('sv-st'); st.textContent='✅ '+data.at; st.style.color='#00e676';
+async function saveAll(){
+  const data={a:document.getElementById('ta').value,sc,en:document.getElementById('l-en').value,sl:document.getElementById('l-sl').value,t1:document.getElementById('l-t1').value,t2:document.getElementById('l-t2').value,at:new Date().toLocaleString('fr-FR')};
+  localStorage.setItem(PREFIX+'_data',JSON.stringify(data));
+  const st=document.getElementById('svst');st.textContent='⏳ Sauvegarde…';st.style.color='#f5a623';
+  try{
+    const GH_TOKEN='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';
+    const file=PREFIX+'-analysis.md';
+    const userR=await fetch('https://api.github.com/user',{headers:{'Authorization':'token '+GH_TOKEN}});
+    const user=await userR.json();
+    const apiUrl=`https://api.github.com/repos/${user.login}/hark-delta/contents/analysis/${file}`;
+    let sha=null;
+    const check=await fetch(apiUrl,{headers:{'Authorization':'token '+GH_TOKEN}});
+    if(check.ok){const d=await check.json();sha=d.sha;}
+    const body={message:'📝 Analyse '+PREFIX+' — '+data.at,content:btoa(unescape(encodeURIComponent(JSON.stringify(data)))),...(sha?{sha}:{})};
+    await fetch(apiUrl,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    st.textContent='✅ Publié pour les élèves · '+data.at;st.style.color='#00e676';
+  }catch(e){
+    st.textContent='✅ Local · '+data.at;st.style.color='#00e676';
+  }
 }
 function restore(){
-  try{const d=JSON.parse(localStorage.getItem('btc_data'));if(!d)return;
-    document.getElementById('ta-main').value=d.analyse||'';
-    document.getElementById('l-en').value=d.en||''; document.getElementById('l-sl').value=d.sl||'';
-    document.getElementById('l-t1').value=d.t1||''; document.getElementById('l-t2').value=d.t2||'';
-    if(d.sc)setSc(d.sc);
-    if(d.at)document.getElementById('sv-st').textContent='Dernière save : '+d.at;
+  try{
+    const d=JSON.parse(localStorage.getItem(PREFIX+'_data'));if(!d)return;
+    document.getElementById('ta').value=d.a||'';
+    document.getElementById('l-en').value=d.en||'';document.getElementById('l-sl').value=d.sl||'';
+    document.getElementById('l-t1').value=d.t1||'';document.getElementById('l-t2').value=d.t2||'';
+    if(d.sc)setSc(d.sc);if(d.at)document.getElementById('svst').textContent='Dernière save : '+d.at;
   }catch{}
 }
-
-// R:R
 function computeRR(){
   const en=parseFloat(document.getElementById('l-en').value?.replace(/[^0-9.]/g,''));
   const sl=parseFloat(document.getElementById('l-sl').value?.replace(/[^0-9.]/g,''));
   const t1=parseFloat(document.getElementById('l-t1').value?.replace(/[^0-9.]/g,''));
-  if(!en||!sl||!t1){document.getElementById('rr-box').innerHTML='Remplir Entrée + SL + TP1 pour voir le R:R';document.getElementById('rr-badge').textContent='En attente';return}
+  if(!en||!sl||!t1){document.getElementById('rr-box').textContent='Remplir Entrée + SL + TP1 pour voir le R:R automatique';document.getElementById('rr-badge').textContent='En attente';return}
   const risk=Math.abs(en-sl),reward=Math.abs(t1-en),rr=(reward/risk).toFixed(2);
-  const isLong=t1>en;
   const col=rr>=2?'#00e676':rr>=1?'#f5a623':'#ff4d4d';
-  document.getElementById('rr-box').innerHTML=`<span style="color:${col};font-weight:800">R:R = 1:${rr}</span> · Risque: $${Math.round(risk).toLocaleString()} · Gain: $${Math.round(reward).toLocaleString()} · ${isLong?'<span style="color:#00e676">LONG ▲</span>':'<span style="color:#ff4d4d">SHORT ▼</span>'}`;
-  document.getElementById('rr-badge').textContent='R:R = 1:'+rr; document.getElementById('rr-badge').style.color=col;
+  document.getElementById('rr-box').innerHTML=`<span style="color:${col};font-weight:800;font-size:.9rem">R:R = 1:${rr}</span> &nbsp;·&nbsp; Risque: $${Math.round(risk).toLocaleString()} &nbsp;·&nbsp; Gain potentiel: $${Math.round(reward).toLocaleString()} &nbsp;·&nbsp; ${t1>en?'<span style="color:#00e676">LONG ▲</span>':'<span style="color:#ff4d4d">SHORT ▼</span>'}`;
+  document.getElementById('rr-badge').textContent='R:R = 1:'+rr;document.getElementById('rr-badge').style.color=col;
 }
 ['l-en','l-sl','l-t1','l-t2'].forEach(id=>document.getElementById(id).addEventListener('input',computeRR));
 setInterval(saveAll,30000);
-
-// Init
-setupImg('cz1','ci1-img','ci1','cb1','c1');
-setupImg('cz2','ci2-img','ci2','cb2','c2');
-restore(); computeRR();
-loadData();
-loadLiq();
-loadETF();
+setupImg('cz1','ci1img','ci1','cb1','btc_c1');
+setupImg('cz2','ci2img','ci2','cb2','btc_c2');
+restore();computeRR();
+loadData();loadLiq();loadETF();
 </script>
 </body>
 </html>
