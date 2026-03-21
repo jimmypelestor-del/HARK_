@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#06080d;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.92);--dim:rgba(255,255,255,.35);--line:rgba(255,255,255,.06);--green:#00e676;--red:#ff4d4d;--gold:#f5a623;--teal:#00d4aa;--accent:#}
+:root{--bg:#06080d;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);--text:rgba(255,255,255,.92);--dim:rgba(255,255,255,.35);--line:rgba(255,255,255,.06);--green:#00e676;--red:#ff4d4d;--gold:#f5a623;--teal:#00d4aa;--accent:#627eea}
 body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 15% 0%,rgba(98,126,234,.13),transparent 35%),radial-gradient(circle at 85% 8%,rgba(138,99,255,.07),transparent 30%),linear-gradient(180deg,#040509 0%,#02040a 100%)}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,rgba(255,255,255,.7),transparent 78%);-webkit-mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,rgba(255,255,255,.7),transparent 78%)}
@@ -19,7 +19,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(3,5,11,.94);backdrop-filte
 .nav-links{display:flex;gap:.4rem}
 .nl{background:rgba(255,255,255,.05);border:1px solid var(--border);color:rgba(255,255,255,.6);padding:.3rem .8rem;border-radius:7px;font-size:.75rem;text-decoration:none;transition:.15s;white-space:nowrap}
 .nl:hover{background:rgba(255,255,255,.1);color:#fff}
-.nl.active{border-color:rgba(98,126,234,.5);color:#;background:rgba(98,126,234,.08)}
+.nl.active{border-color:rgba(98,126,234,.5);color:#627eea;background:rgba(98,126,234,.08)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
 .card{background:var(--card);border:1px solid var(--border);border-top:2px solid rgba(255,255,255,.09);border-radius:16px;overflow:hidden}
@@ -30,7 +30,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(3,5,11,.94);backdrop-filte
 /* HERO */
 .hero{background:var(--card);border:1px solid var(--border);border-top:2px solid rgba(98,126,234,.4);border-radius:20px;padding:1.6rem 2rem;display:flex;align-items:center;gap:1.5rem;box-shadow:0 0 50px rgba(98,126,234,.05)}
 .hero-ico{font-size:3rem;filter:drop-shadow(0 0 14px rgba(98,126,234,.55))}
-.hero-name{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,#fff 30%,#);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-name{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;background:linear-gradient(135deg,#fff 30%,#627eea);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hero-sub{font-size:.75rem;color:var(--dim);margin-top:2px}
 .hero-price{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:#fff;margin-left:auto}
 .hero-kpis{display:flex;gap:1.2rem}
@@ -55,7 +55,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(3,5,11,.94);backdrop-filte
 .txt-area{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;outline:none;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:.84rem;line-height:1.7;padding:.65rem 1rem;resize:vertical;min-height:110px}
 .txt-area::placeholder{color:rgba(255,255,255,.18)}
 .card-foot{padding:.55rem 1.25rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
-.sv-btn{padding:.3rem .85rem;border-radius:8px;border:1px solid rgba(98,126,234,.3);background:rgba(98,126,234,.08);color:#;font-size:.72rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:.15s}
+.sv-btn{padding:.3rem .85rem;border-radius:8px;border:1px solid rgba(98,126,234,.3);background:rgba(98,126,234,.08);color:#627eea;font-size:.72rem;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:.15s}
 .sv-btn:hover{background:rgba(98,126,234,.15)}
 .sv-st{font-size:.65rem;color:var(--dim)}
 /* NIVEAUX */
@@ -111,7 +111,7 @@ input[type=file]{display:none}
 <nav>
   <div class="nav-logo">HarK Trading · Élèves</div>
   <div class="nav-links">
-    <a href="dashboard-secret.html" class="nl">← QG</a>
+    <a href="student-dashboard.html" class="nl">← QG</a>
     <a href="btc-analysis.html" class="nl">₿ BTC</a>
     <a href="eth-analysis.html" class="nl active">Ξ ETH</a>
     <a href="sol-analysis.html" class="nl">◎ SOL</a>
@@ -270,13 +270,13 @@ input[type=file]{display:none}
     </div>
     <div class="liq-links">
       <a href="https://www.coinglass.com/liquidations/ETH" target="_blank" class="liq-link">
-        <div class="liq-link-ico">⚡</div><div class="liq-link-name">Liquidation BTC</div><div class="liq-link-sub">Heatmap · Live</div>
+        <div class="liq-link-ico">⚡</div><div class="liq-link-name">Liquidations ETH</div><div class="liq-link-sub">Heatmap · Live</div>
       </a>
       <a href="https://www.coinglass.com/LiquidationData" target="_blank" class="liq-link">
         <div class="liq-link-ico">📊</div><div class="liq-link-name">Liquidation Data</div><div class="liq-link-sub">Détail Long / Short</div>
       </a>
       <a href="https://www.coinglass.com/pro/futures/LiquidationMap" target="_blank" class="liq-link">
-        <div class="liq-link-ico">🗺️</div><div class="liq-link-name">Liquidation Map</div><div class="liq-link-sub">Niveaux de prix</div>
+        <div class="liq-link-ico">🗺️</div><div class="liq-link-name">Liquidation Map</div><div class="liq-link-sub">Niveaux de prix ETH</div>
       </a>
     </div>
   </div>
@@ -319,14 +319,12 @@ input[type=file]{display:none}
 
 </div>
 <script>
-const COIN='ethereum', SYM_BYBIT='ETHUSDT', SYM_BINANCE='ETHUSDT', ATH=4878, PREFIX='eth';
+const COIN='ethereum', ATH=4878, PREFIX='eth';
 
 async function loadData(){
+  // Prix CoinGecko
   try{
-    const[pr,dr]=await Promise.all([
-      fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`),
-      fetch(`https://api.bybit.com/v5/market/tickers?category=linear&symbol=${SYM_BYBIT}`)
-    ]);
+    const pr=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${COIN}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true`);
     const p=(await pr.json())[COIN];
     const up=p.usd_24h_change>=0;
     document.getElementById('hp').textContent='$'+Math.round(p.usd).toLocaleString('fr-FR');
@@ -334,29 +332,37 @@ async function loadData(){
     document.getElementById('hm').textContent='$'+(p.usd_market_cap/1e12).toFixed(2)+'T';
     const ath=((p.usd/ATH*100)-100).toFixed(1);
     const ae=document.getElementById('ha');ae.textContent=ath+'%';ae.style.color=parseFloat(ath)>=0?'#00e676':'#ff4d4d';
+  }catch(e){console.log('CoinGecko:',e)}
 
-    const d=(await dr.json()).result?.list?.[0];
-    const fr=parseFloat(d?.fundingRate)*100;
-    const frE=document.getElementById('d-fr');
-    frE.textContent=(fr>=0?'+':'')+fr.toFixed(4)+'%';
-    frE.style.color=fr>0.05?'#ff4d4d':fr>0.01?'#f5a623':fr>-0.01?'rgba(255,255,255,.7)':fr>-0.05?'#00d4aa':'#00e676';
-    document.getElementById('d-fr-sub').textContent=(fr>0.05?'⚠️ Haussier extrême — risque retournement':fr>0.01?'Légèrement haussier':fr>-0.01?'Neutre équilibré':fr>-0.05?'Légèrement baissier':'⚠️ Baissier extrême — risque squeeze')+' · Bybit';
-
-    const oi=parseFloat(d?.openInterestValue);
-    if(oi){const e=document.getElementById('d-oi');e.textContent='$'+(oi/1e9).toFixed(2)+'B';}
-    document.getElementById('drv-badge').textContent='Bybit · Binance · Live';
-  }catch(e){console.log(e)}
-
+  // Derivatives via proxy Vercel (CORS safe)
   try{
-    const ls=await(await fetch(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${SYM_BINANCE}&period=5m&limit=1`)).json();
-    const lp=parseFloat(ls[0]?.longAccount)*100;const sp=100-lp;
-    const le=document.getElementById('d-ls');le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S';
-    le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
-    document.getElementById('d-lsbar').style.width=lp+'%';
-    document.getElementById('d-lsbar').style.background=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
-    const reading=lp>65?`⚠️ ${lp.toFixed(1)}% de longs — marché suracheté, risque de cascade baissière si le prix casse un support`:lp<35?`⚠️ ${sp.toFixed(1)}% de shorts — potentiel short squeeze violent si le prix monte`:lp>55?`${lp.toFixed(1)}% de longs — légère dominance haussière, surveiller les supports`:lp<45?`${sp.toFixed(1)}% de shorts — légère pression baissière, surveiller les résistances`:`Marché équilibré (${lp.toFixed(1)}% L · ${sp.toFixed(1)}% S) — pas de signal extrême`;
-    document.getElementById('drv-reading').textContent='Lecture : '+reading;
-  }catch{}
+    const dr=await(await fetch('/api/derivatives-eth',{signal:AbortSignal.timeout(10000)})).json();
+
+    if(dr.fr !== null){
+      const fr=parseFloat(dr.fr);
+      const frE=document.getElementById('d-fr');
+      frE.textContent=(fr>=0?'+':'')+fr.toFixed(4)+'%';
+      frE.style.color=fr>0.05?'#ff4d4d':fr>0.01?'#f5a623':fr>-0.01?'rgba(255,255,255,.7)':fr>-0.05?'#00d4aa':'#00e676';
+      document.getElementById('d-fr-sub').textContent=(fr>0.05?'⚠️ Haussier extrême — risque retournement':fr>0.01?'Légèrement haussier':fr>-0.01?'Neutre équilibré':fr>-0.05?'Légèrement baissier':'⚠️ Baissier extrême — risque squeeze')+' · Bybit';
+    }
+
+    if(dr.oi){document.getElementById('d-oi').textContent=dr.oi;}
+
+    if(dr.lp !== null){
+      const lp=parseFloat(dr.lp);const sp=parseFloat(dr.sp);
+      const le=document.getElementById('d-ls');le.textContent=lp.toFixed(1)+'% L · '+sp.toFixed(1)+'% S';
+      le.style.color=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
+      document.getElementById('d-lsbar').style.width=lp+'%';
+      document.getElementById('d-lsbar').style.background=lp>60?'#ff4d4d':lp<40?'#00d4aa':'#f5a623';
+      const reading=lp>65?`⚠️ ${lp.toFixed(1)}% de longs — marché suracheté, risque de cascade baissière si le prix casse un support`:lp<35?`⚠️ ${sp.toFixed(1)}% de shorts — potentiel short squeeze violent si le prix monte`:lp>55?`${lp.toFixed(1)}% de longs — légère dominance haussière, surveiller les supports`:lp<45?`${sp.toFixed(1)}% de shorts — légère pression baissière, surveiller les résistances`:`Marché équilibré (${lp.toFixed(1)}% L · ${sp.toFixed(1)}% S) — pas de signal extrême`;
+      document.getElementById('drv-reading').textContent='Lecture : '+reading;
+    }
+
+    document.getElementById('drv-badge').textContent='Bybit · Binance · Live';
+  }catch(e){
+    document.getElementById('drv-badge').textContent='⚠️ Derivatives indisponibles';
+    console.log('Derivatives:',e);
+  }
 }
 
 async function loadLiq(){
